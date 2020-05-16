@@ -1,0 +1,37 @@
+Truck
+	id
+	num
+	desc
+	owner
+
+Load
+	id
+	truck:{}
+	started: {name, ts}
+	ended:  {name, ts}
+
+LoadEvents
+	loadId
+		id
+		type
+		msg
+
+
+ActiveLoad
+	loadId
+	ackTruck:{
+		truckNum:"KA03 HM4737"
+		ownerName: "Pampi"
+	}
+
+12
+
+seirge.
+
+container
+metric
+notedefinitions
+wallMetric
+
+
+
