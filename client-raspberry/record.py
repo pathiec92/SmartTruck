@@ -1,159 +1,30 @@
-# USAGE
-# python detect.py --conf config/config.json
-
-# import the necessary packages
-from __future__ import print_function
-# from pyimagesearch.notifications import TwilioNotifier
-from pyimagesearch.utils import Conf
-from imutils.video import VideoStream
+import sys
+import cv2
 from imutils.io import TempFile
 from datetime import datetime
-from datetime import date
-from read_video import *
-import numpy as np
-import argparse
-import imutils
-import signal
-import time
-import cv2
-import sys
 
+class record :
+    def __init__(self):
+        self.startTime = datetime.now()
+        self.writer = None
+        self.tempVideo = None
 
+    def startRecord(self, frame):
+        (H, W) = frame.shape[:2]
+        self.startTime = datetime.now()
+        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        self.tempVideo = TempFile(basePath="/home/zebra/PythonHome/DetectRecordSend", ext=".mp4")
+        self.writer = cv2.VideoWriter(self.tempVideo.path, fourcc, 30, (W, H),True)
+        print("Start recording, now = " + str(self.startTime))
+          
 
-# tn = TwilioNotifier(conf)
+    def recordFrame(self,frame):
+        if self.tempVideo is None or self.writer is None:
+            print("Video record is not started yet.")
+            return
+        self.writer.write(frame)
 
-# initialize the flags for fridge open and notification sent
-fridgeOpen = False
-notifSent = False
-
-# initialize the video stream and allow the camera sensor to warmup
-print("[INFO] warming up camera...")
-# vs = VideoStream(src=0).start()
-# vs = VideoStream(usePiCamera=True).start()
-# time.sleep(2.0)
-
-
-
-# initialize the video writer and the frame dimensions (we'll set
-# them as soon as we read the first frame from the video)
-writer = None
-W = None
-H = None
-
-# loop over the frames of the stream
-def record(frame,):
-	# grab both the next frame from the stream and the previous
-	# refrigerator status
-	# frame = vs.read()
-	fridgePrevOpen = fridgeOpen
-
-	# quit if there was a problem grabbing a frame
-	if frame is None:
-		return 0
-
-	# resize the frame and convert the frame to grayscale
-	frame = imutils.resize(frame, width=200)
-	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-	# if the frame dimensions are empty, set them
-	if W is None or H is None:
-		(H, W) = frame.shape[:2]
-		
-	# calculate the average of all pixels where a higher mean
-	# indicates that there is more light coming into the refrigerator
-	mean = np.mean(gray)
-	#print("Mean: " + mean)
-
-	# determine if the refrigerator is currently open
-	fridgeOpen = mean > conf["thresh"]
-	#print("isOpen = " + fridgeOpen)
-
-	# if the fridge is open and previously it was closed, it means
-	# the fridge has been just opened
-	if fridgeOpen and not fridgePrevOpen:
-		# record the start time
-		startTime = datetime.now()
-
-		# create a temporary video file and initialize the video
-		# writer object
-		fourcc = cv2.VideoWriter_fourcc(*'XVID')
-		tempVideo = TempFile(basePath="/home/zebra/PythonHome/DetectRecordSend", ext=".avi")
-		writer = cv2.VideoWriter(tempVideo.path, fourcc, 30, (W, H),
-			True)
-
-	# if the fridge is open then there are 2 possibilities,
-	# 1) it's left open for more than the *threshold* seconds.
-	# 2) it's closed in less than or equal to the *threshold* seconds.
-	elif fridgePrevOpen:
-		# calculate the time different between the current time and
-		# start time
-		timeDiff = (datetime.now() - startTime).seconds
-
-		# if the fridge is open and the time difference is greater
-		# than threshold, then send a notification
-		if fridgeOpen and timeDiff > conf["open_threshold_seconds"]:
-			# if a notification has not been sent yet, then send a
-			# notification
-			if not notifSent:
-				# build the message and send a notification
-				msg = "Intruder has left your fridge open!!!"
-				print(msg)
-				# release the video writer pointer and reset the
-				# writer object
-				writer.release()
-				writer = None
-
-				print(" send the message and the video to the owner and")
-				# set the notification sent flag
-				# tn.send(msg, tempVideo)
-				notifSent = True
-
-		# check to see if the fridge is closed
-		elif not fridgeOpen:
-			# if a notification has already been sent, then just set
-			# the notifSent to false for the next iteration
-			if notifSent:
-				notifSent = False
-
-			# if a notification has not been sent, then send a
-			# notification
-			else:
-				# record the end time and calculate the total time in
-				# seconds
-				endTime = datetime.now()
-				totalSeconds = (endTime - startTime).seconds
-				dateOpened = date.today().strftime("%A, %B %d %Y")
-
-				# build the message and send a notification
-				msg = "Your fridge was opened on {} at {} for {} " \
-					"seconds.".format(dateOpened,
-					startTime.strftime("%I:%M%p"), totalSeconds)
-				print(msg)
-
-				# release the video writer pointer and reset the
-				# writer object
-				writer.release()
-				writer = None
-
-				print(" send the message and the video to the owner")
-				# tn.send(msg, tempVideo)
-				filename = tempVideo.path[tempVideo.path.rfind("/") + 1:]
-				# readVideo(tempVideo.path)
-				print("File Name: " + filename)
-				print("File Path: " +  tempVideo.path)
-
-	# check to see if we should write the frame to disk
-	if writer is not None:
-		writer.write(frame)
-
-# check to see if we need to release the video writer pointer
-if writer is not None:
-	print("Writer is released")
-	writer.release()
-
-
-# delete the temporary file
-tempVideo.cleanup()
-# cleanup the camera and close any open windows
-cv2.destroyAllWindows()
-vs.stop()
+    def stopRecord(self):
+        self.writer.release()
+        self.writer = None
+        print("Time out, stop recording, upload and send sms")
