@@ -6,6 +6,7 @@ from tools import *
 import argparse
 from pyimagesearch.utils import Conf
 from firestore_service import *
+from session import *
 
 #Load YOLO
 net = cv2.dnn.readNet("yolov3.weights","yolov3.cfg") # Original yolov3
@@ -35,7 +36,11 @@ fireStoreService = FireStoreService()
 
 wait_sub = fireStoreService.subScribeActiveLoad()
 
-s = state(conf, fireStoreService)
+#s = state(conf, fireStoreService)
+def onSessionComplete():
+    print("Session completed!!")
+ses = session(onSessionComplete, fireStoreService)
+
 # signal trap to handle keyboard interrupt
 signal.signal(signal.SIGINT, signal_handler)
 print("[INFO] Press `ctrl + c` to exit, or 'q' to quit if you have" \
@@ -50,7 +55,7 @@ frame_id = 0
 
 
 while True:
-    print(str(fireStoreService.shouldRunService))
+    #print(str(fireStoreService.shouldRunService))
     if fireStoreService.shouldRunService is False :
         time.sleep(1)
         continue
@@ -108,9 +113,10 @@ while True:
             cv2.rectangle(frame,(x,y),(x+w,y+h),color,2)
             cv2.putText(frame,label+" "+str(round(confidence,2)),(x,y+30),font,1,(255,255,255),2)
             print(label, str(round(confidence,2)))
+            #ses.humanDetected(frame)
             if(label == "person"):
                 print("Detected human trigger video capture")
-                s.recordIt(frame,conf)
+                ses.humanDetected(frame)
             
 
     elapsed_time = time.time() - starting_time
