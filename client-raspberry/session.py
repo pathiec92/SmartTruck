@@ -5,11 +5,13 @@ from datetime import datetime
 import threading
 from record import *
 from repo import *
+from util import currentSlot
+from offline import removeDir
 #import sched, time
 SESSION_BUFFER = 20
 class session:
     # sessions: 10, 20,40,80,160,320,640...
-    session_num = 20
+    session_num = 10
     expo = 2
     isDetected = False
     isSessionStarted = False
@@ -21,7 +23,14 @@ class session:
         ap = argparse.ArgumentParser()
         print(str(ap))
         ap.add_argument("-c", "--conf", required=True,help="Path to the input configuration file")
+        ap.add_argument("-dv", "--delv",  action="store_true", help="Delete Video cache (Y/N)")
         args = vars(ap.parse_args())
+        print("[session] Args1 are {}".format(args))
+        if args["delv"]:
+            print("Delete video cache!")
+            removeDir(".vcache")
+            removeDir(".vLinks")
+
         self.slt = slot(self.onSlotComplete)
         self.conf = Conf(args["conf"])
         self.session_duration = self.conf["session_duration"] + SESSION_BUFFER
@@ -41,7 +50,7 @@ class session:
         t= threading.Thread(target=self.slt.schedule,args=(self.session_duration, self.sessionCompleted))
         t.start()
         print("[Session] Started scheduler for duration {}".format(self.session_duration))
-        self.session_num = 20
+        self.session_num = 5
         self.isSessionStarted = True
         self.session_num = self.session_num * self.expo
         self.startSlot(self.session_num,frame)
@@ -50,6 +59,7 @@ class session:
     def startSlot(self,duration,frame):
         self.rcd.startRecord(frame)
         self.isSlotRunning = True
+        currentSlot = duration
         print("[Session] Starting slot for duration = {}".format(duration))
         print("[Session] SLOT STARTED @ {}".format(datetime.now()))
         self.slt.isStopSlot = False
@@ -87,8 +97,9 @@ class session:
 
     def endSlot(self):
         self.rcd.stopRecord()
-        downloadPath = self.cloud.upload(self.rcd.tempVideo)
-        print(u"downloadPath = {}".format(downloadPath))
+        t= threading.Thread(target=self.cloud.upload,args=(self.rcd.tempVideo,))
+        t.start()
+        #print(u"downloadPath = {}".format(downloadPath))
 
 
 

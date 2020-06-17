@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core'
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs';
 import { LoadEvents } from '../shared/LoadEvents';
-import { Load, ActiveLoad, TruckAck } from '../shared/Load';
+import { Load, ActiveLoad, TruckAck, Truck } from '../shared/Load';
 import { map, take, ignoreElements} from 'rxjs/operators';
 import { INFO } from '../shared/util';
 import { UUID } from 'angular2-uuid';
@@ -19,6 +19,7 @@ export class FirestoreDataService {
 
     activeLoadCollection: AngularFirestoreCollection<ActiveLoad>;
     activeLoads:Observable<ActiveLoad[]>;
+    trucks:Observable<Truck[]>;
 
 
     constructor(public firebase:AngularFirestore){
@@ -32,7 +33,13 @@ export class FirestoreDataService {
 
         // )
 
-
+        this.trucks = this.firebase.collection('Truck').snapshotChanges().pipe(
+            map(actions => actions.map(a => {
+                const data = a.payload.doc.data() as Truck;
+                data.truckId = a.payload.doc.id
+                return data
+              }))
+        )
         this.activeLoadCollection = this.firebase.collection('ActiveLoad')
         this.activeLoads = this.activeLoadCollection.snapshotChanges().pipe(
             map(actions => actions.map(a => {
@@ -47,17 +54,21 @@ export class FirestoreDataService {
     getActiveLoads(){
         return this.activeLoads
     }
+
+    getTrucks(){
+        return this.trucks
+    }
     
     getLoadEvents(){
         return this.loadEvents
     }
 
-    deleteActiveLoadsAndAddNew(loadId:string){
+    deleteActiveLoadsAndAddNew(loadId:string,truckId:string){
         this.activeLoadCollection = this.firebase.collection('ActiveLoad')
         var activeLoadSub = this.activeLoadCollection.valueChanges(take(1)).subscribe((al:ActiveLoad[]) => {
             activeLoadSub.unsubscribe()
                console.log(`subscribe for one ${al}`)
-               this.deleteAL(al, al.length-1, loadId)
+               this.deleteAL(al, al.length-1, loadId, truckId)
             //   al.forEach(element => {
             //       console.log(`Deleting active load ${element.loadId}`)
                 
@@ -80,7 +91,7 @@ export class FirestoreDataService {
         load.started = Date.now()
         this.loadDoc = this.firebase.doc(`Load/${load.id}`)
         this.loadDoc.set(Object.assign({},load))
-        this.deleteActiveLoadsAndAddNew(load.id)
+        this.deleteActiveLoadsAndAddNew(load.id, load.truckId)
     }
 
     publishLoadEvent(loadId:string, type:string, message:string){
@@ -99,20 +110,20 @@ export class FirestoreDataService {
 
       
 
-      deleteAL(al:ActiveLoad[], n:number, loadId:string){
-        if(n<0) {
-            this.firebase.doc(`ActiveLoad/${loadId}`).set(Object.assign({},new ActiveLoad(loadId, Date.now())))
+      deleteAL(al:ActiveLoad[], n:number, loadId:string, truckId:string){
+        // if(n<=0) {
+            this.firebase.doc(`ActiveLoad/${loadId}`).set(Object.assign({},new ActiveLoad(loadId,truckId, Date.now())))
             this.publishLoadEvent(loadId, INFO, "Load start request has been sent")
-            return
-        }
-        this.firebase.doc(`ActiveLoad/${al[n].loadId}`).delete().then((res)=>{
-            console.log(res)
-            console.log(`Deleted active load ${al[n]}`)
-            this.deleteAL(al, n-1,loadId)
-        },(err)=>{
-            console.log(err)
-            console.log(`error while deleting active load ${al[n]}`)
-            this.deleteAL(al, n-1,loadId)
-        })
-      }
+        //     return
+        // }
+    //     this.firebase.doc(`ActiveLoad/${al[n].loadId}`).delete().then((res)=>{
+    //         console.log(res)
+    //         console.log(`Deleted active load ${al[n]}`)
+    //         this.deleteAL(al, n-1,loadId)
+    //     },(err)=>{
+    //         console.log(err)
+    //         console.log(`error while deleting active load ${al[n]}`)
+    //         this.deleteAL(al, n-1,loadId)
+    //     })
+       }
 }

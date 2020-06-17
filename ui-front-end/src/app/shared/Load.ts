@@ -10,6 +10,7 @@ export class Load {
 export class ActiveLoad {
     constructor(
         public loadId:string = "",
+        public truckId:string = "",
         public started:number = 1,
         public truckAck:TruckAck = null){
         }
@@ -22,5 +23,13 @@ export class TruckAck {
         public ownerName:string = ""){
 
         }
+}
+
+export class Truck {
+    constructor (
+        public truckId:string = "",
+        public owner:string="",
+        public desc:string = ""
+    ){}
 }
 

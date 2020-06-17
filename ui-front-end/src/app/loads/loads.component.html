@@ -1,0 +1,20 @@
+<div class="row">
+    <div class="col-xs-8 col-sm-6 col-md-4 col-sm-offset-1 col-md-offset-2">
+        <div class="list-group">
+            <p *ngFor="let truck of trucks" >
+                <a [routerLink]="truck.truckId">
+                    <!-- (click)="onLoad(load)" -->
+                <ngb-alert type="info" [dismissible]="false" >
+                    {{ truck.truckId }}
+                    <!-- <a href="load">{{ load.truck }}</a> -->
+                    <!-- <a ngbNavLink routerLink="load">{{ load.truck }}</a> -->
+                </ngb-alert>
+                </a>
+            </p>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+        <router-outlet></router-outlet>
+    </div>
+</div>
+    

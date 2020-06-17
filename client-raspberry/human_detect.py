@@ -2,11 +2,13 @@ import cv2
 import numpy as np
 import time
 import signal
-from tools import *
+#from tools import *
 import argparse
 from pyimagesearch.utils import Conf
 from firestore_service import *
 from session import *
+from util import currentTruck
+from util import signal_handler
 
 #Load YOLO
 net = cv2.dnn.readNet("yolov3.weights","yolov3.cfg") # Original yolov3
@@ -26,19 +28,26 @@ colors= np.random.uniform(0,255,size=(len(classes),3))
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--conf", required=True,
 	help="Path to the input configuration file")
+ap.add_argument("-dv", "--delv",  action="store_true",
+	help="Delete Video cache (Y/N)")
 args = vars(ap.parse_args())
+print("Args1 are {}".format(args))
 
 # load the configuration file and initialize the Twilio notifier
 conf = Conf(args["conf"])
+truckId = conf["truckId"]
+currentTruck.truckId = truckId
+currentTruck.owner = conf["owner"]
 
 #subscribe for ActiveLoad
-fireStoreService = FireStoreService()
+fireStoreService = FireStoreService(truckId)
 
 wait_sub = fireStoreService.subScribeActiveLoad()
 
 #s = state(conf, fireStoreService)
 def onSessionComplete():
     print("Session completed!!")
+
 ses = session(onSessionComplete, fireStoreService)
 
 # signal trap to handle keyboard interrupt
@@ -60,7 +69,7 @@ while True:
         time.sleep(1)
         continue
 
-    _,frame= cap.read() # 
+    _,frame= cap.read()
     frame_id+=1
     #cv2.imshow("Image",frame)
     # Our operations on the frame come here
@@ -112,11 +121,11 @@ while True:
             color = colors[class_ids[i]]
             cv2.rectangle(frame,(x,y),(x+w,y+h),color,2)
             cv2.putText(frame,label+" "+str(round(confidence,2)),(x,y+30),font,1,(255,255,255),2)
-            print(label, str(round(confidence,2)))
-            #ses.humanDetected(frame)
-            if(label == "person"):
-                print("Detected human trigger video capture")
-                ses.humanDetected(frame)
+            #print(label, str(round(confidence,2)))
+            ses.humanDetected(frame)
+            # if(label == "person"):
+            #     print("Detected human trigger video capture")
+            #     ses.humanDetected(frame)
             
 
     elapsed_time = time.time() - starting_time

@@ -6,7 +6,9 @@
 	"open_threshold_seconds": 60,
 	//"sms_to": 9886065056,//Naveen
 	"sms_to": 8970151515,
-	"session_duration":600, //in seconds
+	"session_duration":200, //in seconds
+	"truckId":"KA03HM4740",
+	"owner":"Shiva",
 
 	// variables to store your aws account credentials
 	"aws_access_key_id": "YOUR_AWS_ACCESS_KEY_ID",

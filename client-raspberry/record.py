@@ -2,18 +2,21 @@ import sys
 import cv2
 from imutils.io import TempFile
 from datetime import datetime
+import os   
+from offline import createDir
 
 class record :
     def __init__(self):
         self.startTime = datetime.now()
         self.writer = None
         self.tempVideo = None
+        self.vcache = createDir('.vcache')
 
     def startRecord(self, frame):
         (H, W) = frame.shape[:2]
         self.startTime = datetime.now()
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
-        self.tempVideo = TempFile(basePath="/home/zebra/PythonHome/DetectRecordSend", ext=".mp4")
+        self.tempVideo = TempFile(basePath=self.vcache, ext=".mp4")
         self.writer = cv2.VideoWriter(self.tempVideo.path, fourcc, 30, (W, H),True)
         print("Start recording, now = " + str(self.startTime))
           
