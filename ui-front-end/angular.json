@@ -122,5 +122,8 @@
       }
     }
   },
-  "defaultProject": "SmartTruck"
+  "defaultProject": "SmartTruck",
+  "cli": {
+    "analytics": "a816c3ff-ccb6-47d9-a837-96a74f4f0272"
+  }
 }

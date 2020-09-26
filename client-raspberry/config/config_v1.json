@@ -1,0 +1,21 @@
+{
+	// two constants, first threshold for detecting if the
+	"thresh": 50,
+	"open_threshold_seconds": 60,
+	//"sms_to": 9886065056,//Naveen
+	"sms_to": 8970151515,
+	"session_duration":200, //in seconds
+	"truckId":"KA03HM4740",
+	"owner":"Shiva",
+
+	// variables to store your aws account credentials
+	"aws_access_key_id": "YOUR_AWS_ACCESS_KEY_ID",
+	"aws_secret_access_key": "YOUR_AWS_SECRET_ACCESS_KEY",
+	"s3_bucket": "YOUR_AWS_S3_BUCKET",
+
+	// variables to store your twilio account credentials
+	"twilio_sid": "YOUR_TWILIO_SID",
+	"twilio_auth": "YOUR_TWILIO_AUTH_ID",
+	"twilio_to": "YOUR_PHONE_NUMBER",
+	"twilio_from": "YOUR_TWILIO_PHONE_NUMBER"
+}

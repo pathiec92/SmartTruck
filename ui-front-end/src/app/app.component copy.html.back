@@ -1,0 +1,34 @@
+<div class="container">
+<h2>Smart Truck Management System</h2>
+<!-- <hr>
+<pre>
+  <h2>Welcome Guest!</h2>
+</pre> -->
+<hr>
+</div>
+<div class="container">
+  <app-home></app-home>
+  <app-user></app-user>
+</div>
+<!-- <div class="container">
+  <div class="row">
+    <button class="btn btn-primary" [disabled] = "!enableStart"
+      (click)="startTrip()">
+      Start Trip
+    </button>
+    &nbsp;&nbsp;
+      <button class="btn btn-primary"  [disabled] = "!enableStop"
+      (click)="stopTrip()">
+      Stop Trip
+    </button>
+  </div>
+  <br>
+  <p><ngb-progressbar [type]="tripStatus.type" value="100" [striped]="true" [animated]="true"><b>{{tripStatus.message}} {{tripStatus.value}}%</b></ngb-progressbar></p>
+</div>
+<hr>
+<div class="container">
+  <p>Trip Events</p>
+  <p *ngFor="let alert of tripEvents">
+    <ngb-alert [type]="alert.type" [dismissible]="false">[{{alert.at| date : 'mediumTime'}}] {{ alert.message }}</ngb-alert>
+  </p>
+</div> -->

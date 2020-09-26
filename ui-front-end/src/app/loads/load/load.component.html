@@ -1,0 +1,66 @@
+<!-- <div class="container">
+    <h2>Smart Truck Management System</h2>
+    <hr>
+    <pre>
+      <h2>Welcome Guest!</h2>
+    </pre> 
+    <hr> -->
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+            <button class="btn btn-primary" [disabled]="!enableStart" (click)="startTrip()">
+                Start Trip
+            </button>
+            &nbsp;&nbsp;
+            <button class="btn btn-primary" [disabled]="!enableStop" (click)="stopTrip()">
+                Stop Trip
+            </button>
+            <hr>
+        </div>
+    </div>
+    <ngb-progressbar [type]="tripStatus.type" value="100" [striped]="true" [animated]="true">
+        <b>{{tripStatus.message}} {{tripStatus.value}}%</b></ngb-progressbar>
+    <p>Trip Events</p>
+    <div class="ctoast">
+        <p *ngFor="let alert of tripEvents">
+        
+            <ngb-toast>
+                <span [style]="{color: getColor(alert)}">{{ alert.message }} </span>
+            </ngb-toast>
+            
+        </p>
+    </div>
+</div>
+
+<!-- <div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+            <button class="btn btn-primary" [disabled]="!enableStart" (click)="startTrip()">
+                Start Trip
+            </button>
+            &nbsp;&nbsp;
+            <button class="btn btn-primary" [disabled]="!enableStop" (click)="stopTrip()">
+                Stop Trip
+            </button>
+            <hr>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+            <ngb-progressbar [type]="tripStatus.type" value="100" [striped]="true" [animated]="true">
+                <b>{{tripStatus.message}} {{tripStatus.value}}%</b></ngb-progressbar>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+            <p>Trip Events</p>
+            <p *ngFor="let alert of tripEvents">
+
+                <ngb-toast>
+                    <span [style]="{color: getColor(alert)}">{{ alert.message }} </span>
+                </ngb-toast>
+            </p>
+        </div>
+    </div>
+</div> -->
