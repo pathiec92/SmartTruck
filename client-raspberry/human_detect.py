@@ -1,28 +1,32 @@
-import cv2
-import numpy as np
-import time
-import signal
-#from tools import *
-import argparse
+from imutils.video import VideoStream
+from imutils.video import FPS
 from pyimagesearch.utils import Conf
+from datetime import datetime
+import numpy as np
+import argparse
+import imutils
+import time
+import cv2
+
 from firestore_service import *
 from session import *
 from util import currentTruck
 from util import signal_handler
+import signal
 
 #Load YOLO
-net = cv2.dnn.readNet("yolov3.weights","yolov3.cfg") # Original yolov3
+#net = cv2.dnn.readNet("yolov3.weights","yolov3.cfg") # Original yolov3
 #net = cv2.dnn.readNet("yolov3-tiny.weights","yolov3-tiny.cfg") #Tiny Yolo
-classes = []
-with open("coco.names","r") as f:
-    classes = [line.strip() for line in f.readlines()]
-
-print(classes)
-
-layer_names = net.getLayerNames()
-outputlayers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-
-colors= np.random.uniform(0,255,size=(len(classes),3))
+# load our serialized model from disk
+print("[INFO] loading model...")
+net = cv2.dnn.readNetFromCaffe("MobileNetSSD_deploy.prototxt.txt", "MobileNetSSD_deploy.caffemodel")
+# initialize the list of class labels MobileNet SSD was trained to
+# detect, then generate a set of bounding box colors for each class
+CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
+	"bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+	"dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+	"sofa", "train", "tvmonitor"]
+COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -38,6 +42,7 @@ conf = Conf(args["conf"])
 truckId = conf["truckId"]
 currentTruck.truckId = truckId
 currentTruck.owner = conf["owner"]
+confidenceThreshold = conf["confidence"]
 
 #subscribe for ActiveLoad
 fireStoreService = FireStoreService(truckId)
@@ -55,11 +60,18 @@ signal.signal(signal.SIGINT, signal_handler)
 print("[INFO] Press `ctrl + c` to exit, or 'q' to quit if you have" \
 	" the display option on...")
 
-#loading image
-cap=cv2.VideoCapture(0) #0 for 1st webcam
-font = cv2.FONT_HERSHEY_PLAIN
+# initialize the video stream, allow the cammera sensor to warmup,
+# and initialize the FPS counter
+print("[INFO] starting video stream...")
+vs = VideoStream(0).start()
+time.sleep(2.0)
+fps = FPS().start()
+
+# font = cv2.FONT_HERSHEY_PLAIN
 starting_time= time.time()
 frame_id = 0
+motionCounter = 0
+avg = None
 
 
 
@@ -68,76 +80,140 @@ while True:
     if fireStoreService.shouldRunService is False :
         time.sleep(1)
         continue
+    time.sleep(0.25)
 
-    _,frame= cap.read()
-    frame_id+=1
-    #cv2.imshow("Image",frame)
-    # Our operations on the frame come here
-    #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    #cv2.imshow("Image",frame)
-    height,width,channels = frame.shape
-    #detecting objects
-    blob = cv2.dnn.blobFromImage(frame,0.00392,(320,320),(0,0,0),True,crop=False) #reduce 416 to 320    
+     # grab the current frame and initialize the occupied/unoccupied
+	# text
+    frame = vs.read()
+    envichange = False
+    peopledetect = False
+    motiondetect = False
+    timestamp = datetime.now()
+    text = "Environment Not Changed..."
 
-    net.setInput(blob)
-    outs = net.forward(outputlayers)
-    #print(outs[1])
+    # if the frame could not be grabbed, then we have reached the end
+	# of the video
+    if frame is None:
+        break
+   
+    # resize the frame, convert it to grayscale, and blur it
+    frame = imutils.resize(frame, width=300)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
+    # if the average frame is None, initialize it
+    if avg is None:
+        print("[INFO] starting background model...")
+        avg = gray.copy().astype("float")
+        #rawCapture.truncate(0)
+        continue
 
-    #Showing info on screen/ get confidence score of algorithm in detecting an object in blob
-    class_ids=[]
-    confidences=[]
-    boxes=[]
-    for out in outs:
-        for detection in out:
-            scores = detection[5:]
-            class_id = np.argmax(scores)
-            confidence = scores[class_id]
-            if confidence > 0.3:
-                #onject detected
-                center_x= int(detection[0]*width)
-                center_y= int(detection[1]*height)
-                w = int(detection[2]*width)
-                h = int(detection[3]*height)
+    # accumulate the weighted average between the current frame and
+	# previous frames, then compute the difference between the current
+	# frame and running average
+    cv2.accumulateWeighted(gray, avg, 0.5)
+    frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
 
-                #cv2.circle(img,(center_x,center_y),10,(0,255,0),2)
-                #rectangle co-ordinaters
-                x=int(center_x - w/2)
-                y=int(center_y - h/2)
-                #cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+    # threshold the delta image, dilate the thresholded image to fill
+	# in holes, then find contours on thresholded image
+    thresh = cv2.threshold(frameDelta, conf["delta_thresh"], 255,
+        cv2.THRESH_BINARY)[1]
+    thresh = cv2.dilate(thresh, None, iterations=2)
+    cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+        cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
 
-                boxes.append([x,y,w,h]) #put all rectangle areas
-                confidences.append(float(confidence)) #how confidence was that object detected and show that percentage
-                class_ids.append(class_id) #name of the object tha was detected
+    # loop over the contours
+    for c in cnts:
+        # if the contour is too small, ignore it
+        if cv2.contourArea(c) < conf["min_area"]:
+            continue
+        # compute the bounding box for the contour, draw it on the frame,
+        # and update the text
+        (x, y, w, h) = cv2.boundingRect(c)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        envichange = True
+        text = "Environment Changed..."
 
-    indexes = cv2.dnn.NMSBoxes(boxes,confidences,0.4,0.6)
+    
+    # draw the text and timestamp on the frame
+    ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+    cv2.putText(frame, "Vehicle Status: {}".format(text), (10, 20),
+        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+    cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
+        0.35, (0, 0, 255), 1)
 
+    # check to see if the room is occupied
+    if envichange:
+        # increment the motion counter
+        motionCounter += 1
+        print (motionCounter)
+        # check to see if the number of frames with consistent motion is
+        # high enough
+        if motionCounter >= conf["min_motion_frames"]:
+            # check to see if dropbox sohuld be used
+            motiondetect = True
+            motionCounter = 0
 
-    for i in range(len(boxes)):
-        if i in indexes:
-            x,y,w,h = boxes[i]
-            label = str(classes[class_ids[i]])
-            confidence= confidences[i]
-            color = colors[class_ids[i]]
-            cv2.rectangle(frame,(x,y),(x+w,y+h),color,2)
-            cv2.putText(frame,label+" "+str(round(confidence,2)),(x,y+30),font,1,(255,255,255),2)
-            #print(label, str(round(confidence,2)))
-            ses.humanDetected(frame)
-            # if(label == "person"):
-            #     print("Detected human trigger video capture")
-            #     ses.humanDetected(frame)
+            # grab the frame dimensions and convert it to a blob
+            height,width,channels = frame.shape
+            blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 0.007843, (300, 300), 127.5)    
+
+            # pass the blob through the network and obtain the detections and
+            # predictions
+            net.setInput(blob)
+            detections = net.forward()
+
+            # loop over the detections
+            for i in np.arange(0, detections.shape[2]):
+                # extract the confidence (i.e., probability) associated with
+                # the prediction
+                confidence = detections[0, 0, i, 2]
+                # filter out weak detections by ensuring the `confidence` is
+                # greater than the minimum confidence
+                if confidence > confidenceThreshold:
+                    # extract the index of the class label from the
+                    # `detections`, then compute the (x, y)-coordinates of
+                    # the bounding box for the object
+                    idx = int(detections[0, 0, i, 1])
+                    box = detections[0, 0, i, 3:7] * np.array([width, height, width, height])
+                    (startX, startY, endX, endY) = box.astype("int")
+                    # draw the prediction on the frame
+                    label = "{}: {:.2f}%".format(CLASSES[idx],
+                        confidence * 100)
+                    cv2.rectangle(frame, (startX, startY), (endX, endY),
+                        COLORS[idx], 2)
+                    y = startY - 15 if startY - 15 > 15 else startY + 15
+                    cv2.putText(frame, label, (startX, y),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+                    peopledetect = True
+    # otherwise, the room is not occupied
+    else:
+        motionCounter = 0
+    if motiondetect:
+        print("Truck Inside Staus: Enviornmen Changed at", datetime.now())
+        ses.humanDetected(frame)
+        if peopledetect:
+            print("[Message] Truck Inside Staus: Human Detected at", datetime.now())
+            ses.isSendMessage = True
+    else :
+        ses.captureFrames(frame)
             
+        
+# show the output frame
+    cv2.imshow("Frame", frame)
+    key = cv2.waitKey(1) & 0xFF
+	# if the `q` key was pressed, break from the loop
+    if key == ord("q"):
+        break
+	# update the FPS counter
+    fps.update()
 
-    elapsed_time = time.time() - starting_time
-    fps=frame_id/elapsed_time
-    cv2.putText(frame,"FPS:"+str(round(fps,2)),(10,50),font,2,(0,0,0),1)
-    
-    cv2.imshow("Image",frame)
-    key = cv2.waitKey(1) #wait 1ms the loop will start again and we will process the next frame
-    
-    if key == 27: #esc key stops the process
-        break;
-    
-cap.release()    
-cv2.destroyAllWindows()    
+    # stop the timer and display FPS information
+fps.stop()
+print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
+print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+# do a bit of cleanup
+cv2.destroyAllWindows()
+vs.stop()    
 

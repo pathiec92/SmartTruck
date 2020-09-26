@@ -17,6 +17,7 @@ class session:
     isSessionStarted = False
     isSlotRunning = False
     rcd = record()
+    isSendMessage = False
         
     def __init__(self, onSessionComplete, fservice):
         # construct the argument parser and parse the arguments
@@ -54,11 +55,13 @@ class session:
         self.isSessionStarted = True
         self.session_num = self.session_num * self.expo
         self.startSlot(self.session_num,frame)
+        self.isSendMessage = False
 
 
     def startSlot(self,duration,frame):
         self.rcd.startRecord(frame)
         self.isSlotRunning = True
+        self.isSendMessage = False
         currentSlot = duration
         print("[Session] Starting slot for duration = {}".format(duration))
         print("[Session] SLOT STARTED @ {}".format(datetime.now()))
@@ -69,6 +72,11 @@ class session:
     def humanDetected(self,frame):
         self.isDetected = True
         self.startNewSlotIfNot(frame)
+    
+    def captureFrames(self, frame):
+        if(self.isDetected):
+           # print("Capturing the frame")
+            self.startNewSlotIfNot(frame)
 
     def startNewSlotIfNot(self,frame):
         if(self.isSlotRunning):
@@ -87,6 +95,7 @@ class session:
         self.session_num = self.session_num *  self.expo
         self.isDetected = False
         self.isSlotRunning = False
+        self.isSendMessage = False
         print("[Session] SLOT COMPLETED @ {}".format(datetime.now()))
 
     def sessionCompleted(self):
@@ -97,7 +106,8 @@ class session:
 
     def endSlot(self):
         self.rcd.stopRecord()
-        t= threading.Thread(target=self.cloud.upload,args=(self.rcd.tempVideo,))
+
+        t= threading.Thread(target=self.cloud.upload,args=(self.rcd.tempVideo,self.isSendMessage))
         t.start()
         #print(u"downloadPath = {}".format(downloadPath))
 
