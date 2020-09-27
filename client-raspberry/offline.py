@@ -8,13 +8,15 @@ import threading
 import time
 from util import currentLoad, currentSlot
 from imutils.io import TempFile
+from log import *
+
 def isConnected():
     try:
         # connect to the host -- tells us if the host is actually
         # reachable
         sock = socket.create_connection(("www.google.com", 80))
         if sock is not None:
-            print('Closing socket')
+            logger.info(u'Closing socket')
             sock.close
         return True
     except OSError:
@@ -34,7 +36,7 @@ def removeDir(folderName):
     current_directory = os.getcwd()
     path = os.path.join(current_directory, folderName)
     if os.path.exists(path):
-        print('Removing the files under folder {}'.format(path))
+        logger.info('Removing the files under folder {}'.format(path))
         files  = [f for f in glob(path+'/**', recursive=True) if os.path.isfile(f)]
         for fl in files:
             os.remove(fl)
@@ -57,13 +59,13 @@ class OfflineWorker:
         while True:
             time.sleep(2)
             if isConnected():
-                print("We are back to Online")
+                logger.info(u"We are back to Online")
                 #uploadOfflineEvents(self.fs)
                 self.notifyOnline()
                 self.uploadOfflineVLink()
                 self.isOfflineStarted = False
                 break
-            print("waiting for internet...")
+            logger.info(u"waiting for internet...")
 
 
     # def saveEvent(self, event, dic, fs):
@@ -83,18 +85,18 @@ class OfflineWorker:
         }
         path = createDir('.vLinks')+"/"
         uid = path+str(uuid.uuid4())+'.json'
-        print("[Offline] saving vLink {}".format(dic))
+        logger.info(u"[Offline] saving vLink {}".format(dic))
         with open(uid, 'w') as json_file:
             json.dump(dic, json_file)
 
     def uploadOfflineVLink(self):       
         files  = [f for f in glob(os.getcwd()+'/.vLinks/**', recursive=True) if os.path.isfile(f)]
-        print("[offline] uploading files {}".format(str(files)))
+        logger.info(u"[offline] uploading files {}".format(str(files)))
         for fl in files:
-            print("[Offline] Opening the file {}".format(fl))
+            logger.info(u"[Offline] Opening the file {}".format(fl))
             with open(fl) as f:
                 dic = json.load(f)
-                print("[Offline] dic {}".format(dic))
+                logger.info(u"[Offline] dic {}".format(dic))
                 currentLoad.loadId= dic['loadId']
                 currentSlot=dic['slot']
                 temp = TempFile()
@@ -112,7 +114,7 @@ class OfflineWorker:
 #     # Set metadata to blob
 #     videoBlob.metadata = metadata
 
-#     print(str(videoBlob.upload_from_filename(path)))
+#     logger.info(str(videoBlob.upload_from_filename(path)))
 #     # delete the temporary file
 #     os.remove(fl)
 #     os.remove(path)
@@ -121,17 +123,17 @@ class OfflineWorker:
 
 # def uploadOfflineEvents(fs):
 #     if fs is None:  
-#         print("[offline] Fs is none")
+#         logger.info(u"[offline] Fs is none")
 #         return
 #     current_directory = os.getcwd()
-#     print("[offline] current_directory {}".format(str(current_directory)))
+#     logger.info(u"[offline] current_directory {}".format(str(current_directory)))
 #     dirs = [f for f in glob(current_directory+'/.eJson/**', recursive=True) if os.path.isdir(f)]
-#     print("[offline] Found dirs {}".format(str(dirs)))
+#     logger.info(u"[offline] Found dirs {}".format(str(dirs)))
 #     for ed in dirs:
 #         ename = ed[ed.rfind("/") + 1:]
-#         print("ename {}".format(ename))
+#         logger.info(u"ename {}".format(ename))
 #         if ename != 'LoadEvents' and ename != 'VideoLink' :
-#             print("not found the event")
+#             logger.info(u"not found the event")
 #             continue
 #         upload = UploadLoad(fs) if ename == "LoadEvents" else UploadVLink(fs)
 #         upload.uploadEvent(ed)
@@ -143,7 +145,7 @@ class OfflineWorker:
 #         self.fs = fs
 #     def uploadEvent(self, ed ):
 #         files  = [f for f in glob(ed+'/**', recursive=True) if os.path.isfile(f)]
-#         print("[offline] uploading files {}".format(str(files)))
+#         logger.info(u"[offline] uploading files {}".format(str(files)))
 #         for fl in files:
 #             with open(fl) as f:
 #                 dic = json.load(f)
@@ -158,7 +160,7 @@ class OfflineWorker:
 #     def __init__(self, fs):
 #         super().__init__(fs)
 #     def upload(self, dic,fl):
-#         print("[offline] uploading load Event"+str(dic))
+#         logger.info(u"[offline] uploading load Event"+str(dic))
 #         self.fs.uploadEventDic(dic)
 #         os.remove(fl)
 #         return super().upload(dic,fl)
@@ -167,7 +169,7 @@ class OfflineWorker:
 #     def __init__(self, fs):
 #         super().__init__(fs)
 #     def upload(self, dic,fl):
-#         print("[offline] uploading vLink Event"+str(dic))
+#         logger.info(u"[offline] uploading vLink Event"+str(dic))
 #         self.fs.uploadVLinkDic(dic)
 #         os.remove(fl)
 #         return super().upload(dic,fl)

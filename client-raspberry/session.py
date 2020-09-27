@@ -7,6 +7,8 @@ from record import *
 from repo import *
 from util import currentSlot
 from offline import removeDir
+from log import *
+
 #import sched, time
 SESSION_BUFFER = 20
 class session:
@@ -22,13 +24,13 @@ class session:
     def __init__(self, onSessionComplete, fservice):
         # construct the argument parser and parse the arguments
         ap = argparse.ArgumentParser()
-        print(str(ap))
+        logger.info(str(ap))
         ap.add_argument("-c", "--conf", required=True,help="Path to the input configuration file")
         ap.add_argument("-dv", "--delv",  action="store_true", help="Delete Video cache (Y/N)")
         args = vars(ap.parse_args())
-        print("[session] Args1 are {}".format(args))
+        logger.info(u"[session] Args1 are {}".format(args))
         if args["delv"]:
-            print("Delete video cache!")
+            logger.info("Delete video cache!")
             removeDir(".vcache")
             removeDir(".vLinks")
 
@@ -39,18 +41,18 @@ class session:
         self.cloud = Gcloud(self.conf, fservice)
         self.fservice = fservice
         #self.scheduler = sched.scheduler(time.time, time.sleep)
-        print(u"[Session] duration = {}".format(str(self.session_duration )))
+        logger.info(u"[Session] duration = {}".format(str(self.session_duration )))
 
     def startSession(self,frame):
         if self.isSessionStarted : 
-            print("[Session] Session already started, ignored current request")
+            logger.info(u"[Session] Session already started, ignored current request")
             return
-        print("[Session] NEW SESSION STARTED @ {}".format(datetime.now()))
+        logger.info(u"[Session] NEW SESSION STARTED @ {}".format(datetime.now()))
         self.fservice.uploadEvent("Attention! Detected Human inside the truck", "warning")
 
         t= threading.Thread(target=self.slt.schedule,args=(self.session_duration, self.sessionCompleted))
         t.start()
-        print("[Session] Started scheduler for duration {}".format(self.session_duration))
+        logger.info(u"[Session] Started scheduler for duration {}".format(self.session_duration))
         self.session_num = 5
         self.isSessionStarted = True
         self.session_num = self.session_num * self.expo
@@ -63,8 +65,8 @@ class session:
         self.isSlotRunning = True
         self.isSendMessage = False
         currentSlot = duration
-        print("[Session] Starting slot for duration = {}".format(duration))
-        print("[Session] SLOT STARTED @ {}".format(datetime.now()))
+        logger.info(u"[Session] Starting slot for duration = {}".format(duration))
+        logger.info(u"[Session] SLOT STARTED @ {}".format(datetime.now()))
         self.slt.isStopSlot = False
         t= threading.Thread(target=self.slt.startSlot,args=(duration,))
         t.start()
@@ -75,13 +77,13 @@ class session:
     
     def captureFrames(self, frame):
         if(self.isDetected):
-           # print("Capturing the frame")
+           # logger.info("Capturing the frame")
             self.startNewSlotIfNot(frame)
 
     def startNewSlotIfNot(self,frame):
         if(self.isSlotRunning):
             self.rcd.recordFrame(frame)
-            #print("slot is running already, just record the frame")
+            #logger.info("slot is running already, just record the frame")
             return
         if self.isSessionStarted :
             self.startSlot(self.session_num, frame)
@@ -91,15 +93,15 @@ class session:
 
     def onSlotComplete(self, duration):
         self.endSlot()
-        print("[Session] Slot completed for duration {}".format(duration))
+        logger.info(u"[Session] Slot completed for duration {}".format(duration))
         self.session_num = self.session_num *  self.expo
         self.isDetected = False
         self.isSlotRunning = False
         self.isSendMessage = False
-        print("[Session] SLOT COMPLETED @ {}".format(datetime.now()))
+        logger.info(u"[Session] SLOT COMPLETED @ {}".format(datetime.now()))
 
     def sessionCompleted(self):
-        print("[Session] SESSION COMPLETED @ {}".format(datetime.now()))
+        logger.info(u"[Session] SESSION COMPLETED @ {}".format(datetime.now()))
         self.isSessionStarted = False
         self.slt.isStopSlot = True
         self.onSessionComplete()
@@ -109,7 +111,7 @@ class session:
 
         t= threading.Thread(target=self.cloud.upload,args=(self.rcd.tempVideo,self.isSendMessage))
         t.start()
-        #print(u"downloadPath = {}".format(downloadPath))
+        #logger.info(u"downloadPath = {}".format(downloadPath))
 
 
 

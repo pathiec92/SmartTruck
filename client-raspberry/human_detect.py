@@ -13,12 +13,14 @@ from session import *
 from util import currentTruck
 from util import signal_handler
 import signal
+from log import *
 
 #Load YOLO
 #net = cv2.dnn.readNet("yolov3.weights","yolov3.cfg") # Original yolov3
 #net = cv2.dnn.readNet("yolov3-tiny.weights","yolov3-tiny.cfg") #Tiny Yolo
 # load our serialized model from disk
-print("[INFO] loading model...")
+logger.info(u'[INFO] loading model...')
+print("logger {}", logger)
 net = cv2.dnn.readNetFromCaffe("MobileNetSSD_deploy.prototxt.txt", "MobileNetSSD_deploy.caffemodel")
 # initialize the list of class labels MobileNet SSD was trained to
 # detect, then generate a set of bounding box colors for each class
@@ -35,7 +37,7 @@ ap.add_argument("-c", "--conf", required=True,
 ap.add_argument("-dv", "--delv",  action="store_true",
 	help="Delete Video cache (Y/N)")
 args = vars(ap.parse_args())
-print("Args1 are {}".format(args))
+logger.info(u"Args1 are {}".format(args))
 
 # load the configuration file and initialize the Twilio notifier
 conf = Conf(args["conf"])
@@ -51,18 +53,18 @@ wait_sub = fireStoreService.subScribeActiveLoad()
 
 #s = state(conf, fireStoreService)
 def onSessionComplete():
-    print("Session completed!!")
+    logger.info(u"Session completed!!")
 
 ses = session(onSessionComplete, fireStoreService)
 
 # signal trap to handle keyboard interrupt
 signal.signal(signal.SIGINT, signal_handler)
-print("[INFO] Press `ctrl + c` to exit, or 'q' to quit if you have" \
+logger.info(u"[INFO] Press `ctrl + c` to exit, or 'q' to quit if you have" \
 	" the display option on...")
 
 # initialize the video stream, allow the cammera sensor to warmup,
 # and initialize the FPS counter
-print("[INFO] starting video stream...")
+logger.info(u"[INFO] starting video stream...")
 vs = VideoStream(0).start()
 time.sleep(2.0)
 fps = FPS().start()
@@ -76,7 +78,7 @@ avg = None
 
 
 while True:
-    #print(str(fireStoreService.shouldRunService))
+    #logger.info(str(fireStoreService.shouldRunService))
     if fireStoreService.shouldRunService is False :
         time.sleep(1)
         continue
@@ -103,7 +105,7 @@ while True:
 
     # if the average frame is None, initialize it
     if avg is None:
-        print("[INFO] starting background model...")
+        logger.info(u"[INFO] starting background model...")
         avg = gray.copy().astype("float")
         #rawCapture.truncate(0)
         continue
@@ -147,7 +149,7 @@ while True:
     if envichange:
         # increment the motion counter
         motionCounter += 1
-        print (motionCounter)
+        #logger.info(motionCounter)
         # check to see if the number of frames with consistent motion is
         # high enough
         if motionCounter >= conf["min_motion_frames"]:
@@ -191,10 +193,10 @@ while True:
     else:
         motionCounter = 0
     if motiondetect:
-        print("Truck Inside Staus: Enviornmen Changed at", datetime.now())
+        logger.info(u"Truck Inside Staus: Enviornmen Changed at {}".format(datetime.now()))
         ses.humanDetected(frame)
         if peopledetect:
-            print("[Message] Truck Inside Staus: Human Detected at", datetime.now())
+            logger.info(u"[Message] Truck Inside Staus: Human Detected at {}".format(datetime.now()))
             ses.isSendMessage = True
     else :
         ses.captureFrames(frame)
@@ -211,8 +213,8 @@ while True:
 
     # stop the timer and display FPS information
 fps.stop()
-print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
-print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+logger.info(u"[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
+logger.info(u"[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 # do a bit of cleanup
 cv2.destroyAllWindows()
 vs.stop()    

@@ -6,6 +6,7 @@ from datetime import datetime
 import uuid
 from firestore_service import FireStoreService
 from offline import *
+from log import *
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
 firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com')
@@ -33,11 +34,11 @@ class Gcloud:
             self.bucket = storage.Client().get_bucket('mycloudstorage-1135.appspot.com')
         
     def uploadOffline(self,tempVideo):
-        print("[Gcloud] uploading offline {}".format(tempVideo.path))
+        logger.info(u"[Gcloud] uploading offline {}".format(tempVideo.path))
         self.upload(tempVideo)
 
     def upload(self, tempVideo, isSendMessage):
-        print(u"Uploading the file {}".format(tempVideo.path))
+        logger.info(u"Uploading the file {}".format(tempVideo.path))
         # Create new token
         new_token = uuid.uuid4()
         # Create new dictionary with the metadata
@@ -51,10 +52,10 @@ class Gcloud:
             videoBlob = self.bucket.blob("videos/"+filename)
             # Set metadata to blob
             videoBlob.metadata = metadata
-            print(str(videoBlob.upload_from_filename(tempVideo.path)))
+            logger.info(str(videoBlob.upload_from_filename(tempVideo.path)))
             # delete the temporary file
             tempVideo.cleanup()
-            print(videoBlob.public_url)
+            logger.info(videoBlob.public_url)
             self.sendSms(filename, new_token, isSendMessage)
         
         return "videoBlob.public_url"
@@ -64,18 +65,18 @@ class Gcloud:
         #downloadLink = u"https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%252F{}?alt=media%26token={}".format(name,token)
         downloadLink = u"https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F{}?alt=media&token={}".format(name,token)
         startTime = datetime.now().strftime("%I:%M:%S%p")
-        print(u"Opened At {}".format(startTime))
+        logger.info(u"Opened At {}".format(startTime))
         msg = u"Your Vehicle No. {} Door Opened at {} and you can view/ download video clip at {}".format(self.vehicleNum, startTime, downloadLink)
         sms = u"https://www.businesssms.co.in/sms.aspx?ID=satyology@gmail.com&Pwd=Nastssms@2328&PhNo={}&Text={}" \
         .format(self.phNum, msg)
         if(isSendMessage):
-            print(u"Sending sms {}".format(sms))
+            logger.info(u"Sending sms {}".format(sms))
             r = requests.get(sms)
         else :
-            print(u"Motion is detected, but not sure if human")
+            logger.info(u"Motion is detected, but not sure if human")
 
-        print(u"request = {}".format( r))
+        logger.info(u"request = {}".format( r))
         self.fservice.uploadEvent(msg,"danger")
         self.fservice.uploadVLink(downloadLink)
-        #print(u"desc = {}, status = {}, header = {}".format( r.json()["description"], r.status_code, r.headers['content-type']))
+        #logger.info(u"desc = {}, status = {}, header = {}".format( r.json()["description"], r.status_code, r.headers['content-type']))
 
