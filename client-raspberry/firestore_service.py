@@ -10,6 +10,7 @@ from util import video
 from util import currentLoad
 from util import currentSlot
 from offline import *
+from log import *
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
@@ -36,12 +37,12 @@ class FireStoreService:
             return
         isActiveLoadAvail = False
         for doc in doc_snapshot:
-            print(u'Received document snapshot: {} => {}'.format(doc.id, doc.to_dict()))
+            logger.info(u'Received document snapshot: {} => {}'.format(doc.id, doc.to_dict()))
             truckId = doc.to_dict().get("truckId")
-            print(u'self.truckId = {}, fb.truckId = {}'.format(self.truckId, truckId))
+            logger.info(u'self.truckId = {}, fb.truckId = {}'.format(self.truckId, truckId))
             if self.truckId == truckId :
                 isActiveLoadAvail = True
-                print(u'found my truck {}'.format(truckId))
+                logger.info(u'found my truck {}'.format(truckId))
                 loadId = doc.to_dict().get("loadId")
                 truckAck = doc.to_dict().get("truckAck")
                 currentLoad.loadId = loadId
@@ -53,7 +54,7 @@ class FireStoreService:
                             u'ownerName': "Pampi"
                         }
                     }
-                    print('START FRAUD DETECTION SERVICE')
+                    logger.info(u'START FRAUD DETECTION SERVICE')
                     doc_ref.document(loadId).update(data)
                     self.uploadLoadEvent("Started Fraud detection service at truck")
                 self.shouldRunService = True            
@@ -63,7 +64,7 @@ class FireStoreService:
 
 
     def stopService(self):
-        print('STOP FRAUD DETECTION SERVICE')
+        logger.info(u'STOP FRAUD DETECTION SERVICE')
         self.shouldRunService = False
         self.uploadLoadEvent("Stopped fraud detection service at truck.")
 
@@ -72,7 +73,7 @@ class FireStoreService:
     
     def uploadEvent(self,msg, t):
         if currentLoad.loadId == "" : 
-            print("currentLoadId is empty")
+            logger.info(u"currentLoadId is empty")
             return
         now = int(round(time.time() * 1000))
         loadEvent = {
@@ -84,7 +85,7 @@ class FireStoreService:
         if isConnected():
             self.uploadEventDic(loadEvent)
         else :
-            print("[Offline] device offline, LoadEvents TBD {}".format(loadEvent))
+            logger.info(u"[Offline] device offline, LoadEvents TBD {}".format(loadEvent))
             #saveEvent("LoadEvents", loadEvent,self)
        
     def uploadEventDic(self,dic):
@@ -98,7 +99,7 @@ class FireStoreService:
         if isConnected():
             self.uploadVLinkDic(v.getEvent())
         else :
-            print("[Offline] device offline, VideoLink TBD {}".format(v.getEvent()))
+            logger.info(u"[Offline] device offline, VideoLink TBD {}".format(v.getEvent()))
 
             #saveEvent("VideoLink",v.getEvent,self)
         

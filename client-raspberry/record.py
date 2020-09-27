@@ -4,6 +4,7 @@ from imutils.io import TempFile
 from datetime import datetime
 import os   
 from offline import createDir
+from log import *
 
 class record :
     def __init__(self):
@@ -18,16 +19,16 @@ class record :
         fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         self.tempVideo = TempFile(basePath=self.vcache, ext=".mp4")
         self.writer = cv2.VideoWriter(self.tempVideo.path, fourcc, 30, (W, H),True)
-        print("Start recording, now = " + str(self.startTime))
+        logger.info(u"Start recording, now = " + str(self.startTime))
           
 
     def recordFrame(self,frame):
         if self.tempVideo is None or self.writer is None:
-            print("Video record is not started yet.")
+            logger.info(u"Video record is not started yet.")
             return
         self.writer.write(frame)
 
     def stopRecord(self):
         self.writer.release()
         self.writer = None
-        print("Time out, stop recording, upload and send sms")
+        logger.info(u"Time out, stop recording, upload and send sms")
