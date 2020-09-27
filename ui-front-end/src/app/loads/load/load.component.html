@@ -7,6 +7,16 @@
     <hr> -->
 <div class="container">
     <div class="row">
+        <div class="col-xs-8">
+            <h4 >
+                <ngb-alert type="info" [dismissible]="false">
+                <strong>Truck number: {{truckId}}</strong> 
+                </ngb-alert>
+            </h4>
+        </div>
+    </div>
+     
+    <div class="row">
         <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
             <button class="btn btn-primary" [disabled]="!enableStart" (click)="startTrip()">
                 Start Trip

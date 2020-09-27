@@ -57,7 +57,7 @@ class FireStoreService:
                     doc_ref.document(loadId).update(data)
                     self.uploadLoadEvent("Started Fraud detection service at truck")
                 self.shouldRunService = True            
-            break
+                break
         if isActiveLoadAvail is False:
             self.stopService()
 
