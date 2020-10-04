@@ -16,7 +16,7 @@ class record :
     def startRecord(self, frame):
         (H, W) = frame.shape[:2]
         self.startTime = datetime.now()
-        fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.tempVideo = TempFile(basePath=self.vcache, ext=".mp4")
         self.writer = cv2.VideoWriter(self.tempVideo.path, fourcc, 30, (W, H),True)
         logger.info(u"Start recording, now = " + str(self.startTime))

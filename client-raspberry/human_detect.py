@@ -75,135 +75,125 @@ frame_id = 0
 motionCounter = 0
 avg = None
 
-
+dooropenCounter = 1
+truckdoorClose=False
+truckdoorOpen = False
 
 while True:
+    truckenviBright = False
+    truckenviDark = False
+    humandetect = False
+    truckdoorOpen = False
+    truckdoorClose=False
     #logger.info(str(fireStoreService.shouldRunService))
     if fireStoreService.shouldRunService is False :
         time.sleep(1)
         continue
-    time.sleep(0.25)
+    time.sleep(0.03)
 
      # grab the current frame and initialize the occupied/unoccupied
 	# text
     frame = vs.read()
-    envichange = False
-    peopledetect = False
-    motiondetect = False
+    
     timestamp = datetime.now()
-    text = "Environment Not Changed..."
 
     # if the frame could not be grabbed, then we have reached the end
 	# of the video
     if frame is None:
         break
-   
-    # resize the frame, convert it to grayscale, and blur it
-    frame = imutils.resize(frame, width=300)
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (21, 21), 0)
-
-    # if the average frame is None, initialize it
-    if avg is None:
-        logger.info(u"[INFO] starting background model...")
-        avg = gray.copy().astype("float")
-        #rawCapture.truncate(0)
-        continue
-
-    # accumulate the weighted average between the current frame and
-	# previous frames, then compute the difference between the current
-	# frame and running average
-    cv2.accumulateWeighted(gray, avg, 0.5)
-    frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
-
-    # threshold the delta image, dilate the thresholded image to fill
-	# in holes, then find contours on thresholded image
-    thresh = cv2.threshold(frameDelta, conf["delta_thresh"], 255,
-        cv2.THRESH_BINARY)[1]
-    thresh = cv2.dilate(thresh, None, iterations=2)
-    cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
-        cv2.CHAIN_APPROX_SIMPLE)
-    cnts = imutils.grab_contours(cnts)
-
-    # loop over the contours
-    for c in cnts:
-        # if the contour is too small, ignore it
-        if cv2.contourArea(c) < conf["min_area"]:
-            continue
-        # compute the bounding box for the contour, draw it on the frame,
-        # and update the text
-        (x, y, w, h) = cv2.boundingRect(c)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        envichange = True
-        text = "Environment Changed..."
-
     
-    # draw the text and timestamp on the frame
-    ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
-    cv2.putText(frame, "Vehicle Status: {}".format(text), (10, 20),
-        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-    cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
-        0.35, (0, 0, 255), 1)
+# Pre Process the Frame 
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
+    cv2.imshow("Frame", frame)
+    frame_original = imutils.resize(frame, width=300)
+    if(ses.isDetected):
+        ses.captureFrames(frame_original)
+        continue
+    gray = cv2.cvtColor(frame_original,cv2.COLOR_BGR2GRAY)
+    
+    # The declaration of CLAHE  
+	# clipLimit -> Threshold for contrast limiting 
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8)) 
+    gray = clahe.apply(gray) + 30
 
-    # check to see if the room is occupied
-    if envichange:
-        # increment the motion counter
-        motionCounter += 1
-        #logger.info(motionCounter)
-        # check to see if the number of frames with consistent motion is
-        # high enough
-        if motionCounter >= conf["min_motion_frames"]:
-            # check to see if dropbox sohuld be used
-            motiondetect = True
-            motionCounter = 0
+    fame_processed = np.zeros_like(frame_original)
+    fame_processed[:,:,0] = gray
+    fame_processed[:,:,1] = gray
+    fame_processed[:,:,2] = gray
 
-            # grab the frame dimensions and convert it to a blob
-            height,width,channels = frame.shape
-            blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 0.007843, (300, 300), 127.5)    
-
-            # pass the blob through the network and obtain the detections and
-            # predictions
-            net.setInput(blob)
-            detections = net.forward()
-
-            # loop over the detections
-            for i in np.arange(0, detections.shape[2]):
-                # extract the confidence (i.e., probability) associated with
-                # the prediction
-                confidence = detections[0, 0, i, 2]
-                # filter out weak detections by ensuring the `confidence` is
-                # greater than the minimum confidence
-                if confidence > confidenceThreshold:
-                    # extract the index of the class label from the
-                    # `detections`, then compute the (x, y)-coordinates of
-                    # the bounding box for the object
-                    idx = int(detections[0, 0, i, 1])
-                    box = detections[0, 0, i, 3:7] * np.array([width, height, width, height])
-                    (startX, startY, endX, endY) = box.astype("int")
-                    # draw the prediction on the frame
-                    label = "{}: {:.2f}%".format(CLASSES[idx],
-                        confidence * 100)
-                    cv2.rectangle(frame, (startX, startY), (endX, endY),
-                        COLORS[idx], 2)
-                    y = startY - 15 if startY - 15 > 15 else startY + 15
-                    cv2.putText(frame, label, (startX, y),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
-                    peopledetect = True
-    # otherwise, the room is not occupied
+    # calculate the average of all pixels where a higher mean
+	# indicates that there is more light coming into the truck
+    mean = np.mean(gray)
+    
+    # print (mean)
+    # determine if the environment is changed inside truck
+    if mean > conf["truckenvithresh"]:
+        truckenviBright = True
+        # print ("Bright Environment")
     else:
-        motionCounter = 0
-    if motiondetect:
-        logger.info(u"Truck Inside Staus: Enviornmen Changed at {}".format(datetime.now()))
-        ses.humanDetected(frame)
-        if peopledetect:
-            logger.info(u"[Message] Truck Inside Staus: Human Detected at {}".format(datetime.now()))
-            ses.isSendMessage = True
-    else :
-        ses.captureFrames(frame)
+        truckenviDark = True  
+        # print ("Dark Environment")  
+    if dooropenCounter >= conf["min_dooropen_frames"]:
+        if truckenviBright and not truckdoorOpen:
+            truckdoorOpen= True
+            truckdoorClose = False
+            logger.info(u"Truck Inside Status: Door Opened (due to more light coming in...) at {}".format(datetime.now()))
+            print("Truck Inside Status: Door Opened (due to more light coming in...) at ", datetime.now()) 
+        elif truckenviDark and not truckdoorClose:
+            truckdoorClose = True
+            truckdoorOpen = False
+            logger.info(u"Truck Inside Status: Door Closed (due to low light inside...) at {}".format(datetime.now()))
+            print("Truck Inside Status: Door Closed (due to low light inside...) at ", datetime.now()) 
+        dooropenCounter = 0
+    else:
+        dooropenCounter += 1
+
+    # grab the frame dimensions and convert it to a blob for Human Detection
+    (h, w) = fame_processed.shape[:2]
+    blob = cv2.dnn.blobFromImage(cv2.resize(fame_processed, (300, 300)),
+        0.007843, (300, 300), 127.5)
+
+    # pass the blob through the network and obtain the detections and
+    # predictions
+    net.setInput(blob)
+    detections = net.forward()
+
+    # loop over the detections
+    for i in np.arange(0, detections.shape[2]):
+        # extract the confidence (i.e., probability) associated with
+        # the prediction
+        confidence = detections[0, 0, i, 2]
+
+        # filter out weak detections by ensuring the `confidence` is
+        # greater than the minimum confidence
+        if confidence > conf["confidence"]:
+            # extract the index of the class label from the
+            # `detections`, then compute the (x, y)-coordinates of
+            # the bounding box for the object
+            idx = int(detections[0, 0, i, 1])
+            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            (startX, startY, endX, endY) = box.astype("int")
+            if idx == 15:
+                humandetect = True
+                # draw the prediction on the frame
+                label = "{}: {:.2f}%".format(CLASSES[idx],
+                    confidence * 100)
+                cv2.rectangle(frame_original, (startX, startY), (endX, endY),
+                    COLORS[idx], 2)
+                y = startY - 15 if startY - 15 > 15 else startY + 15
+                cv2.putText(frame_original, label, (startX, y),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
+
+    if humandetect or truckdoorOpen:
+        logger.info(u"Truck Inside Status: Human Detected at {}".format(datetime.now()))
+        print("Truck Inside Status: Human Detected at ", datetime.now())
+        ses.humanDetected(frame_original)
+        ses.isSendMessage = True
+        
             
         
 # show the output frame
-    cv2.imshow("Frame", frame)
+    cv2.imshow("Frame", frame_original)
     key = cv2.waitKey(1) & 0xFF
 	# if the `q` key was pressed, break from the loop
     if key == ord("q"):
