@@ -62,13 +62,14 @@ class Gcloud:
 
     def sendSms(self,name,token, isSendMessage):
         #downloadLink = u"https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fmycloudstorage-1135.appspot.com%2Fo%252Fvideos%25{}%3Falt%3Dmedia%26token%3D{}".format(name,token)
-        #downloadLink = u"https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%252F{}?alt=media%26token={}".format(name,token)
-        downloadLink = u"https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F{}?alt=media&token={}".format(name,token)
+        downloadSMSLink = u"https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%252F{}?alt=media%26token={}".format(name,token)
+        downloadLink = "https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F{}?alt=media&token={}".format(name,token)
         startTime = datetime.now().strftime("%I:%M:%S%p")
         logger.info(u"Opened At {}".format(startTime))
+        msgSMS = u"Your Vehicle No. {} Door Opened at {} and you can view/ download video clip at {}".format(self.vehicleNum, startTime, downloadSMSLink)
         msg = u"Your Vehicle No. {} Door Opened at {} and you can view/ download video clip at {}".format(self.vehicleNum, startTime, downloadLink)
         sms = u"https://www.businesssms.co.in/sms.aspx?ID=satyology@gmail.com&Pwd=Nastssms@2328&PhNo={}&Text={}" \
-        .format(self.phNum, msg)
+        .format(self.phNum, msgSMS)
         if(isSendMessage):
             logger.info(u"Sending sms {}".format(sms))
             r = requests.get(sms)

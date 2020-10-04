@@ -1,21 +1,20 @@
 {
-	
 	"truckId":"KA03HM4740",
 	"owner":"Shiva",
 	
-	"thresh": 50,
-	"open_threshold_seconds": 60,
+	"truckenvithresh": 50,
+	"open_threshold_seconds": 10,
 
-	"sms_to": 8970151515,
+	"sms_to": 9886065056,
 	"session_duration":600,
 
 	"min_upload_seconds": 3.0,
-	"min_motion_frames": 8,
+	"min_dooropen_frames": 8,
 	"camera_warmup_time": 2.5,
 	"delta_thresh": 2,
 	"resolution": [640, 480],
 	"fps": 16,
 	"min_area": 5000,
 
-	"confidence": 0.4
+	"confidence": 0.25
 }

@@ -53,7 +53,7 @@ class session:
         t= threading.Thread(target=self.slt.schedule,args=(self.session_duration, self.sessionCompleted))
         t.start()
         logger.info(u"[Session] Started scheduler for duration {}".format(self.session_duration))
-        self.session_num = 5
+        self.session_num = 10
         self.isSessionStarted = True
         self.session_num = self.session_num * self.expo
         self.startSlot(self.session_num,frame)
