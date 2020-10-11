@@ -66,7 +66,9 @@ export class LoadsComponent implements OnInit, OnDestroy {
     this.activeLoadSub = this._data.getTrucks().subscribe(
       (trucks:Truck[]) => {
         console.log(`active trucks ${trucks}, length = ${trucks.length}`)
-        this.trucks = trucks
+        this.trucks = trucks.filter((t,i, a)=> {
+          return t.sl !== null &&  t.sl !== undefined && t.sl.length>0
+        })
       }
     )
   }

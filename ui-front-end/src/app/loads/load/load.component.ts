@@ -3,13 +3,14 @@ import { interval, Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { ConnectProgress, Alert, INIT, CONNECTING, 
   LOAD_ENDED,LOAD_STARTED,
-  CONNECTING_FAILED, CONNECTED,ALERTS, INFO, WAITING} from '../../shared/util'
+  CONNECTING_FAILED, CONNECTED,ALERTS, INFO, WAITING, CMD_SENDING, CMD_SENT_FAIL, CMD_SENT_SUCCESS} from '../../shared/util'
 
 import { FirestoreDataService } from '../../service/firestore-data.service';
 import { LoadEvents } from '../../shared/LoadEvents';
 import { Load, ActiveLoad, TruckAck} from '../../shared/Load';
 import { UUID } from 'angular2-uuid';
 import { ActivatedRoute, Params } from '@angular/router';
+import { Command } from 'src/app/shared/Command';
 
 
 
@@ -29,14 +30,19 @@ export class LoadComponent implements OnInit, OnDestroy{
   tripStatus : ConnectProgress = INIT
   tripEvents :LoadEvents[] = []
   activeLoad = new ActiveLoad()
-  load:Load = new Load(UUID.UUID(), null,null,  "")
+  load:Load = new Load(UUID.UUID(), null,null,  "","")
   loadEventSub: Subscription = null
   startCounterSub: Subscription = null
   stopCounterSub: Subscription = null
   activeLoadSub: Subscription = null
+  cmdCounterSub: Subscription = null
   truckId:string=""
+  sl:string = ""
 
 
+  command=""
+  arguments=""
+  servingCmd = false
 
   constructor(private zone:NgZone, private _data: FirestoreDataService,
     private route:ActivatedRoute) {
@@ -45,17 +51,52 @@ export class LoadComponent implements OnInit, OnDestroy{
 
   ngOnInit() {
     this.truckId = this.route.snapshot.params['truckId']
-    console.log(`truckId selected ${this.truckId}`)
+    this.sl = this.route.snapshot.params['sl']
+    this.subscribeTruckCommand()
     this.route.params.subscribe(
       (param:Params) => {
         this.truckId = param['truckId']
-        console.log(`new truckId selected ${this.truckId}`)
+        this.sl = param['sl']
+        console.log(`new truckId selected ${this.truckId}, ${this.sl}`)
         this.subscribeToActiveLoad()
       }
     )
   }
 
- 
+  subscribeTruckCommand():void{
+    this._data.subScribeTruckCommand(this.truckId).subscribe(
+      (al:Command[]) => {
+        console.log(`Command ${al}, length = ${al.length}`)
+        if(al.length>0 && al[0].ack !=null ){
+          console.log(`Command ${al[0].command}, length = ${al.length}`)
+          this.tripStatus = CMD_SENT_SUCCESS
+          this.servingCmd = false
+          if(this.cmdCounterSub != null){
+            this.cmdCounterSub.unsubscribe()
+          }
+        }
+      }
+    )
+  }
+  send(): void{
+    if(this.command.length>0 && this.arguments.length>0){
+      console.log("Command = "+this.command)
+      console.log("Arguments = "+this.arguments)
+      this._data.sendCommand(this.truckId,new Command(this.truckId, this.command, this.arguments))
+      this.command = ""
+      this.arguments = ""
+      this.servingCmd = true
+      this.tripStatus = CMD_SENDING
+      this.cmdCounterSub =  this.counter(()=>{
+        this.tripStatus = CMD_SENT_FAIL
+        this.servingCmd = false
+        this.cmdCounterSub.unsubscribe()
+        this.cmdCounterSub = null
+      })
+    } else{
+      console.log("Command and arguments should not be empty")
+    }
+  }
 
   private subscribeToActiveLoad(){
     this.tripEvents=[]
@@ -89,7 +130,7 @@ export class LoadComponent implements OnInit, OnDestroy{
             }
             this.loadEventSub = this._data.subcribeToLoadEvents(this.activeLoad.loadId).subscribe(
               (loadEvents:LoadEvents[]) => {
-                this.tripEvents = loadEvents
+                this.tripEvents = loadEvents.reverse()
                 console.log(this.tripEvents)
               }
             )
@@ -105,7 +146,6 @@ export class LoadComponent implements OnInit, OnDestroy{
 
   }
 
-
   private noCurrentActiveLoads() {
     this.isStarted = false;
     this.isLoading = false;
@@ -117,7 +157,7 @@ export class LoadComponent implements OnInit, OnDestroy{
    this.tripStatus = CONNECTING
    this.isLoading = true
    this.updateButtonStatus()
-   this.load = new Load(UUID.UUID(),  null,null, this.truckId)
+   this.load = new Load(UUID.UUID(),  null,null, this.truckId, this.sl)
    this._data.startLoad(this.load)
    this.startCounterSub =  this.counter(()=>{
       // this.isStarted = true
@@ -128,15 +168,15 @@ export class LoadComponent implements OnInit, OnDestroy{
   }
   public getColor(load:LoadEvents){
     switch(load.type){
-        case 'info':
-            return "gray"
-        case 'danger':
-            return "red"
-            case 'warning':
-              return 'orange'
+      case 'info':
+        return "gray"
+      case 'danger':
+        return "red"
+      case 'warning':
+        return 'orange'
     }
     return "blue"
-}
+  }
 
   deleteAllActiveLoads(){
 
@@ -191,11 +231,11 @@ export class LoadComponent implements OnInit, OnDestroy{
     console.log(`enableStart = ${this.enableStart}`)
   }
 
+
   updateStop() {
     this.enableStop= !this.isLoading && this.isStarted
     console.log(`enableStop = ${this.enableStop}`)
   }
-
   private counter(callback:()=>void): Subscription{
     // Create an Observable that will publish a value on an interval
     const secondsCounter = interval(1000).pipe(take(6));
@@ -215,7 +255,6 @@ export class LoadComponent implements OnInit, OnDestroy{
     );
   }
 
-
   ngOnDestroy(){
     
     if(this.loadEventSub!=null){
@@ -223,6 +262,9 @@ export class LoadComponent implements OnInit, OnDestroy{
     }
     if(this.startCounterSub!=null){
       this.startCounterSub.unsubscribe()
+    }
+    if(this.cmdCounterSub!=null){
+      this.cmdCounterSub.unsubscribe()
     }
     if(this.stopCounterSub!=null){
       this.stopCounterSub.unsubscribe()

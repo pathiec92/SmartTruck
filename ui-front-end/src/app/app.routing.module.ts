@@ -15,7 +15,13 @@ const appRoutes: Routes = [
     {
         path:'load', component:LoadsComponent, canActivate:[AuthGaurd],
         children: [
-            {path:':truckId', component:LoadComponent}
+            {
+                path:':truckId/:sl', component:LoadComponent,
+                // children: [ {
+                //     path:':sl', component:LoadComponent
+                // }
+                // ]
+            }
         ]
     },
     {path:'truck', component:TrucksComponent, canActivate:[AuthGaurd]},
