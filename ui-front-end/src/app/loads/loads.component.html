@@ -2,10 +2,10 @@
     <div class="col-xs-8 col-sm-6 col-md-4 col-sm-offset-1 col-md-offset-2">
         <div class="list-group">
             <p *ngFor="let truck of trucks" >
-                <a [routerLink]="truck.truckId">
+                <a [routerLink]="[truck.truckId, truck.sl]">
                     <!-- (click)="onLoad(load)" -->
                 <ngb-alert type="info" [dismissible]="false" >
-                    {{ truck.truckId }}
+                    {{ truck.truckId }} {{truck.sl}}
                     <!-- <a href="load">{{ load.truck }}</a> -->
                     <!-- <a ngbNavLink routerLink="load">{{ load.truck }}</a> -->
                 </ngb-alert>

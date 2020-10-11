@@ -50,6 +50,26 @@ export interface Alert {
       message: 'Connected! Waiting for truck response...',
       value:10
     }
+
+    export  const CMD_SENDING : ConnectProgress = {
+      type: WARN,
+      message: 'Sending the Command',
+      value:100
+    }
+  
+    export  const CMD_SENT_SUCCESS : ConnectProgress = {
+      type: SUCCESS,
+      message: 'Command executed successfully',
+      value:100
+    }
+
+    export  const CMD_SENT_FAIL : ConnectProgress = {
+      type: DANG,
+      message: 'Command sent failed',
+      value:100
+    }
+
+
   
   
     export const ALERTS :Alert[] = [{

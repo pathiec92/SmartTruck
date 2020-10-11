@@ -36,6 +36,7 @@ ap.add_argument("-c", "--conf", required=True,
 	help="Path to the input configuration file")
 ap.add_argument("-dv", "--delv",  action="store_true",
 	help="Delete Video cache (Y/N)")
+
 args = vars(ap.parse_args())
 logger.info(u"Args1 are {}".format(args))
 
@@ -50,6 +51,7 @@ confidenceThreshold = conf["confidence"]
 fireStoreService = FireStoreService(truckId)
 
 wait_sub = fireStoreService.subScribeActiveLoad()
+fireStoreService.subscribeCommand()
 
 #s = state(conf, fireStoreService)
 def onSessionComplete():

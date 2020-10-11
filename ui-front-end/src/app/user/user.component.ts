@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class UserComponent implements OnInit {
   title="Smart Truck"
-  userName = "User Name "
+  userName = "UserId"
   password = "Password"
   constructor(public authService:AuthService, private router:Router) { }
 
@@ -17,8 +17,8 @@ export class UserComponent implements OnInit {
   }
   login(){
     console.log("login")
-    this.router.navigate(['/home'])
-    this.authService.login()
+    //this.router.navigate(['/home'])
+    this.authService.login(this.userName, this.password)
 
   }
 

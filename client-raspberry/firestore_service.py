@@ -11,23 +11,39 @@ from util import currentLoad
 from util import currentSlot
 from offline import *
 from log import *
+from command_service import *
+from configs import *
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
 firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com')
 
 class FireStoreService:
-    def __init__(self,truckId):
+    def __init__(self,truckId = ""):
         self.shouldRunService = False
         firebase_admin.initialize_app()
         self.db = firestore.client()
-        self.truckId = truckId
+        self.configs = Configs()
+        self.truckId = self.configs.truckId
+        self.command = Command(truckId, self, self.configs)
+        
         #self.activeload_ref = self.db.collection(u'ActiveLoad')
 
     def subScribeActiveLoad(self):
         doc_ref = self.db.collection(u'ActiveLoad')
         # Watch the document
-        return doc_ref.on_snapshot(self.on_snapshot)
+        return  doc_ref.on_snapshot(self.on_snapshot)
+
+    def subscribeCommand(self):
+        logger.info(u'Subscribing for command')
+        print(u'Subscribing for command')
+        truckCol = u'Truck/{0}/command'.format(self.truckId)
+        print(u'Truck collection = {}'.format(truckCol))
+        doc_ref = self.db.collection(truckCol)
+        # Watch the document
+        return doc_ref.on_snapshot(self.command.serve)
+    
+
     
 
     def on_snapshot(self, doc_snapshot, changes, read_time):
@@ -39,8 +55,9 @@ class FireStoreService:
         for doc in doc_snapshot:
             logger.info(u'Received document snapshot: {} => {}'.format(doc.id, doc.to_dict()))
             truckId = doc.to_dict().get("truckId")
-            logger.info(u'self.truckId = {}, fb.truckId = {}'.format(self.truckId, truckId))
-            if self.truckId == truckId :
+            sl = doc.to_dict().get("sl")
+            logger.info(u'self.configs.serialNum = {}, fb.sl = {}, truckid'.format(self.configs.serialNum, sl, truckId))
+            if self.configs.serialNum == sl :
                 isActiveLoadAvail = True
                 logger.info(u'found my truck {}'.format(truckId))
                 loadId = doc.to_dict().get("loadId")
@@ -107,10 +124,17 @@ class FireStoreService:
         uid = str(uuid.uuid4())
         loadevent_ref = self.db.collection(u'VideoLink').document(uid).set(dic)
 
-    
+    def publishDeviceId(self):
+        uid = str(uuid.uuid4())
+        now = int(round(time.time() * 1000))
+        deviceDic = {
+            u'sl' : self.configs.serialNum,
+            u'at': now
+        }
+        print(u'deviceDic = {}'.format(deviceDic))
+        loadevent_ref = self.db.collection(u'Device').document(self.configs.serialNum).set(deviceDic)
 
-
-
- 
-    
-
+    def updateCommand(self, dic):
+        truckId = dic["truckId"]
+        loadevent_ref = self.db.collection(u'Truck').document(truckId).collection("command").document("0").set(dic)
+        return

@@ -35,9 +35,11 @@ class Gcloud:
         
     def uploadOffline(self,tempVideo):
         logger.info(u"[Gcloud] uploading offline {}".format(tempVideo.path))
-        self.upload(tempVideo)
+        t= threading.Thread(target=self.upload,args=(tempVideo,True))
+        t.start()
+       # self.upload(tempVideo)
 
-    def upload(self, tempVideo, isSendMessage):
+    def upload(self, tempVideo, isSendMessage=False):
         logger.info(u"Uploading the file {}".format(tempVideo.path))
         # Create new token
         new_token = uuid.uuid4()
@@ -73,10 +75,10 @@ class Gcloud:
         if(isSendMessage):
             logger.info(u"Sending sms {}".format(sms))
             r = requests.get(sms)
+            logger.info(u"request = {}".format(r))
         else :
             logger.info(u"Motion is detected, but not sure if human")
 
-        logger.info(u"request = {}".format( r))
         self.fservice.uploadEvent(msg,"danger")
         self.fservice.uploadVLink(downloadLink)
         #logger.info(u"desc = {}, status = {}, header = {}".format( r.json()["description"], r.status_code, r.headers['content-type']))

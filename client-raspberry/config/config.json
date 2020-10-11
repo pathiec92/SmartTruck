@@ -16,5 +16,7 @@
 	"fps": 16,
 	"min_area": 5000,
 
-	"confidence": 0.25
+	"confidence": 0.25,
+
+	"defaul_sl":"DevTestDevice1"
 }
