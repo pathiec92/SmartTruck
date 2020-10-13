@@ -56,9 +56,11 @@ class FireStoreService:
             logger.info(u'Received document snapshot: {} => {}'.format(doc.id, doc.to_dict()))
             truckId = doc.to_dict().get("truckId")
             sl = doc.to_dict().get("sl")
-            logger.info(u'self.configs.serialNum = {}, fb.sl = {}, truckid'.format(self.configs.serialNum, sl, truckId))
+            logger.info(u'self.configs.serialNum = {}, fb.sl = {}, {}'.format(self.configs.serialNum, sl, truckId))
             if self.configs.serialNum == sl :
                 isActiveLoadAvail = True
+                self.configs.serialNum = sl
+                self.configs.truckId = truckId
                 logger.info(u'found my truck {}'.format(truckId))
                 loadId = doc.to_dict().get("loadId")
                 truckAck = doc.to_dict().get("truckAck")

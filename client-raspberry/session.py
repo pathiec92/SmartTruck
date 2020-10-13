@@ -40,6 +40,7 @@ class session:
         self.onSessionComplete = onSessionComplete
         self.cloud = Gcloud(self.conf, fservice)
         self.fservice = fservice
+        self.slotStartTime = datetime.now()
         #self.scheduler = sched.scheduler(time.time, time.sleep)
         logger.info(u"[Session] duration = {}".format(str(self.session_duration )))
 
@@ -65,6 +66,7 @@ class session:
         self.isSlotRunning = True
         self.isSendMessage = False
         currentSlot = duration
+        self.slotStartTime = datetime.now()
         logger.info(u"[Session] Starting slot for duration = {}".format(duration))
         logger.info(u"[Session] SLOT STARTED @ {}".format(datetime.now()))
         self.slt.isStopSlot = False
@@ -109,7 +111,7 @@ class session:
     def endSlot(self):
         self.rcd.stopRecord()
 
-        t= threading.Thread(target=self.cloud.upload,args=(self.rcd.tempVideo,self.isSendMessage))
+        t= threading.Thread(target=self.cloud.upload,args=(self.rcd.tempVideo,self.isSendMessage, self.slotStartTime))
         t.start()
         #logger.info(u"downloadPath = {}".format(downloadPath))
 
