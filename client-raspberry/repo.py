@@ -15,9 +15,8 @@ firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com
 
 class Gcloud:
     def __init__(self, conf, fservice:FireStoreService):
-
         self.phNum = conf["sms_to"]
-        self.vehicleNum = conf["truckId"]
+        self.vehicleNum = fservice.configs.truckId
         self.fservice = fservice
         self.offlineWorker = OfflineWorker(self.uploadOffline,self.notifyOnline)
         self.bucket = None
@@ -39,7 +38,7 @@ class Gcloud:
         t.start()
        # self.upload(tempVideo)
 
-    def upload(self, tempVideo, isSendMessage=False):
+    def upload(self, tempVideo, isSendMessage=False, slotStartTime=datetime.now()):
         logger.info(u"Uploading the file {}".format(tempVideo.path))
         # Create new token
         new_token = uuid.uuid4()
@@ -58,20 +57,21 @@ class Gcloud:
             # delete the temporary file
             tempVideo.cleanup()
             logger.info(videoBlob.public_url)
-            self.sendSms(filename, new_token, isSendMessage)
+            self.sendSms(filename, new_token, isSendMessage, slotStartTime)
         
         return "videoBlob.public_url"
 
-    def sendSms(self,name,token, isSendMessage):
+    def sendSms(self,name,token, isSendMessage,slotStartTime):
         #downloadLink = u"https%3A%2F%2Ffirebasestorage.googleapis.com%2Fv0%2Fb%2Fmycloudstorage-1135.appspot.com%2Fo%252Fvideos%25{}%3Falt%3Dmedia%26token%3D{}".format(name,token)
         downloadSMSLink = u"https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%252F{}?alt=media%26token={}".format(name,token)
         downloadLink = "https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F{}?alt=media&token={}".format(name,token)
-        startTime = datetime.now().strftime("%I:%M:%S%p")
+        startTime = slotStartTime.strftime("%I:%M:%S%p")
         logger.info(u"Opened At {}".format(startTime))
-        msgSMS = u"Your Vehicle No. {} Door Opened at {} and you can view/ download video clip at {}".format(self.vehicleNum, startTime, downloadSMSLink)
-        msg = u"Your Vehicle No. {} Door Opened at {} and you can view/ download video clip at {}".format(self.vehicleNum, startTime, downloadLink)
+        msgSMS = u"Your Vehicle No. {} Door Opened at {} and you can view/ download video clip at {}".format(self.fservice.configs.truckId, startTime, downloadSMSLink)
+        msg = u"Your Vehicle No. {} Door Opened at {} and you can view/ download video clip at {}".format(self.fservice.configs.truckId, startTime, downloadLink)
         sms = u"https://www.businesssms.co.in/sms.aspx?ID=satyology@gmail.com&Pwd=Nastssms@2328&PhNo={}&Text={}" \
         .format(self.phNum, msgSMS)
+        logger.info(u'fservice truckId {}'.format(self.fservice.configs.truckId))
         if(isSendMessage):
             logger.info(u"Sending sms {}".format(sms))
             r = requests.get(sms)
