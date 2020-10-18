@@ -17,7 +17,7 @@ export class UserComponent implements OnInit {
   }
   login(){
     console.log("login")
-    //this.router.navigate(['/home'])
+    this.router.navigate(['/load'])
     this.authService.login(this.userName, this.password)
 
   }

@@ -14,24 +14,31 @@ class DiagService:
     def __init__(self ):
         logger.info(u"[DiagService] created")
         self.slt = slot(self.onSlotComplete)
+        self.fireStoreService = FireStoreService()
+        self.fireStoreService.instance = 'diag'
+        self.fireStoreService.publishDeviceId()
+
     def onSlotComplete(self, duration):
-        print('slot completed')
+        print('heart beat timeOUt')
         self.stopProcess("human_detect")
 
     def sessionCompleted(self):
-        print(u"[Session] SESSION COMPLETED @ {}".format(datetime.now()))
+        print(u"[DiagService] Sending HEART BEAT @ {}".format(datetime.now()))
+        self.fireStoreService.publishDeviceId()
         self.startProcess()
-        self.stopProcess("human_detect")
-        
+        #self.stopProcess("human_detect")
+    
+    def startHeartBeat(self):
+        self.startProcess()
 
     def startProcess(self):
-        t= threading.Thread(target=self.slt.schedule,args=(20, self.sessionCompleted))
+        t= threading.Thread(target=self.slt.schedule,args=(120, self.sessionCompleted))
         t.start()
 
     def stopProcess(self, grep):
         os.system('ps axf | grep human_detect | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
         print('Starting human-detection')
-        os.system('cd /home/zebra/SmartTruck/client-raspberry; python3 human_detect.py -c config/config.json')
+        os.system('cd ~/SmartTruck/client-raspberry; python3 human_detect.py -c config/config.json')
         
 #diag = DiagService()
 #diag.startProcess()
@@ -50,8 +57,10 @@ class DiagService:
 # conf = Conf(args["conf"])
 # truckId = conf["truckId"]
 
-fireStoreService = FireStoreService()
-fireStoreService.subscribeCommand()
-fireStoreService.publishDeviceId()
+
+
+diag = DiagService()
+
+diag.startHeartBeat()
 while True:
     time.sleep(0.1)

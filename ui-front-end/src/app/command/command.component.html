@@ -1,0 +1,45 @@
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" [routerLink]="['../../']">Truck Status
+            <i class="fa fa-home"></i>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link " [routerLink]="['../']">History</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" [routerLink]="[]">Truck Config</a>
+    </li>
+</ul>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
+        <div class="form-group">
+            <label for="command">Command</label>
+            <input
+              type="text"
+              id="command"
+              class="form-control"
+              [(ngModel)]="command">
+        </div>
+        <div class="form-group">
+            <label for="arguments">Arguments</label>
+            <input
+              type="text"
+              id="arguments"
+              class="form-control"
+              [(ngModel)]="arguments">
+        </div>
+        <div class="form-group">
+        <button
+            class="btn btn-primary" [disabled]= servingCmd
+            (click)="send()">Send Command</button>
+        </div>
+        <div class="form-group">
+            <ngb-progressbar [type]="tripStatus.type" value="100" [striped]="true" [animated]="true">
+            <b>{{tripStatus.message}} {{tripStatus.value}}%</b></ngb-progressbar>
+        </div>
+
+    </div>
+   </div>
+

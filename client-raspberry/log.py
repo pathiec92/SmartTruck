@@ -20,7 +20,7 @@ print("logger {}", logger)
 #f_handler = logging.FileHandler('file.log')
 path = createDir("logs")
 print('log path {}', path)
-f_handler = RotatingFileHandler('logs/smart_truck.log', maxBytes=10485760,
+f_handler = RotatingFileHandler('logs/smart_truck.log', maxBytes=3221225472,
                                   backupCount=5)
 f_handler.setLevel(logging.DEBUG)
 
@@ -31,8 +31,8 @@ f_handler.setFormatter(f_format)
 # Add handlers to the logger
 logger.addHandler(f_handler)
 logging.getLogger().setLevel(logging.DEBUG)
-print("After setting logger {}", logger)
-logger.info('This is Info')
-logger.warning('This is a warning')
-logger.error('This is an error')
+#print("After setting logger {}", logger)
+logger.info('Logger is created')
+#logger.warning('This is a warning')
+#logger.error('This is an error')
 

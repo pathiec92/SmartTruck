@@ -9,9 +9,9 @@ import { ActivatedRoute } from '@angular/router';
 
 export class AppComponent {
   links = [
-    { title: 'Home', fragment: 'home' },
-    { title: 'Active Trucks', fragment: 'load' },
-    { title: 'Truck Management', fragment: 'truck' },
+   // { title: 'Home', fragment: 'home' },
+    { title: 'Trucks', fragment: 'load' },
+    //{ title: 'Truck Management', fragment: 'truck' },
     { title: 'Profile', fragment: 'user' },
 
   ];

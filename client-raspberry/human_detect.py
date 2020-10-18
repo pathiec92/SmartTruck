@@ -48,11 +48,11 @@ currentTruck.owner = conf["owner"]
 confidenceThreshold = conf["confidence"]
 
 #subscribe for ActiveLoad
-fireStoreService = FireStoreService(truckId)
+fireStoreService = FireStoreService()
 
 wait_sub = fireStoreService.subScribeActiveLoad()
-fireStoreService.subscribeCommand()
-
+#fireStoreService.subscribeCommand()
+fireStoreService.instance = 'main'
 #s = state(conf, fireStoreService)
 def onSessionComplete():
     logger.info(u"Session completed!!")

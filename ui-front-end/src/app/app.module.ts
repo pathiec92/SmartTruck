@@ -17,6 +17,10 @@ import { TruckComponent } from './trucks/truck/truck.component';
 import { LoadComponent } from './loads/load/load.component';
 import { TrucksComponent } from './trucks/trucks.component';
 import { LoadsComponent } from './loads/loads.component';
+import { PastLoadComponent } from './past-load/past-load.component';
+import { DispPastloadComponent } from './disp-pastload/disp-pastload.component';
+import { CommandComponent } from './command/command.component';
+
 
 @NgModule({
   declarations: [
@@ -26,7 +30,10 @@ import { LoadsComponent } from './loads/loads.component';
     TruckComponent,
     LoadComponent,
     TrucksComponent,
-    LoadsComponent
+    LoadsComponent,
+    PastLoadComponent,
+    DispPastloadComponent,
+    CommandComponent
   ],
   imports: [
     BrowserModule,

@@ -14,6 +14,11 @@ export interface Alert {
       message: 'No Load in progress',
       value:0
     }
+    export  const INIT_CMD : ConnectProgress = {
+      type: INFO,
+      message: 'Command progress shown here.',
+      value:0
+    }
   
     export  const CONNECTING : ConnectProgress = {
       type: WARN,
@@ -29,19 +34,19 @@ export interface Alert {
   
     export  const LOAD_STARTED : ConnectProgress = {
       type: SUCCESS,
-      message: 'Load Started',
+      message: 'Started the new load.',
       value:100
     }
   
     export  const LOAD_ENDED : ConnectProgress = {
       type: SUCCESS,
-      message: 'Load ENDED',
+      message: 'Last load stoped, new load can be started.',
       value:100
     }
   
     export const CONNECTING_FAILED : ConnectProgress = {
       type: DANG,
-      message: 'Opps!, Connection failed',
+      message: 'Opps!, device is not responding and waiting for the response',
       value:100
     }
 
