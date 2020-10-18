@@ -7,6 +7,15 @@ export class Load {
         }
 }
 
+export class LoadUi {
+
+    constructor(
+        public id:string = "", public started:string ,
+        public ended:string, public truckId:string, public sl:string) {
+
+        }
+}
+
 export class ActiveLoad {
     constructor(
         public loadId:string = "",
@@ -42,6 +51,16 @@ export class User {
         public password:string=""
     ){}
 }
+
+export class Device {
+    constructor (
+        public id:string = "",
+        public sl:string = "",
+        public at:number=0
+    ){}
+}
+
+
 
 
 

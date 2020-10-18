@@ -1,0 +1,33 @@
+
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link" [routerLink]="['../']">Truck Status
+            <i class="fa fa-home"></i>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" [routerLink]="[]">History</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" [routerLink]="['command']">Truck Config</a>
+    </li>
+</ul>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8">
+            <h4 >
+                <ngb-alert type="info" [dismissible]="false">
+                <strong>Truck : {{truckId}}</strong>
+                </ngb-alert>
+            </h4>
+            <h6><p *ngFor="let pl of pastLoads">
+        
+                <ngb-alert type="dark" [dismissible]="false">
+                    <b>Start Time: <button (click)="openReport(pl.id, pl.started)" href="{0}">{{pl.started}}</button></b> <br>
+                    <i>End Time: {{pl.ended}}</i> 
+                </ngb-alert>
+                
+            </p></h6>
+        </div>
+    </div>
+</div>

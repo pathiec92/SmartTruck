@@ -67,8 +67,8 @@ class session:
         self.isSendMessage = False
         currentSlot = duration
         self.slotStartTime = datetime.now()
-        logger.info(u"[Session] Starting slot for duration = {}".format(duration))
-        logger.info(u"[Session] SLOT STARTED @ {}".format(datetime.now()))
+        #logger.info(u"[Session] Starting slot for duration = {}".format(duration))
+        logger.info(u"[Session] SLOT STARTED @ {}, duration={}".format(datetime.now(), duration))
         self.slt.isStopSlot = False
         t= threading.Thread(target=self.slt.startSlot,args=(duration,))
         t.start()
@@ -95,12 +95,12 @@ class session:
 
     def onSlotComplete(self, duration):
         self.endSlot()
-        logger.info(u"[Session] Slot completed for duration {}".format(duration))
+        #logger.info(u"[Session] Slot completed for duration {}".format(duration))
         self.session_num = self.session_num *  self.expo
         self.isDetected = False
         self.isSlotRunning = False
         self.isSendMessage = False
-        logger.info(u"[Session] SLOT COMPLETED @ {}".format(datetime.now()))
+        logger.info(u"[Session] SLOT COMPLETED @ {}, duration={}".format(datetime.now(),duration))
 
     def sessionCompleted(self):
         logger.info(u"[Session] SESSION COMPLETED @ {}".format(datetime.now()))

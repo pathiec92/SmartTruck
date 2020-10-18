@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core'
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs';
 import { LoadEvents } from '../shared/LoadEvents';
-import { Load, ActiveLoad, TruckAck, Truck, User } from '../shared/Load';
+import { Load, ActiveLoad, TruckAck, Truck, User, Device } from '../shared/Load';
 import { map, take, ignoreElements} from 'rxjs/operators';
 import { INFO } from '../shared/util';
 import { UUID } from 'angular2-uuid';
@@ -14,6 +14,7 @@ import { Command } from '../shared/Command';
 export class FirestoreDataService {
     loadEventCollection: AngularFirestoreCollection<LoadEvents>;
     loadEvents:Observable<LoadEvents[]>;
+    pastLoadEvents:Observable<LoadEvents[]>;
     loadEventDoc:AngularFirestoreDocument<LoadEvents>;
 
     loadCollection: AngularFirestoreCollection<Load>;
@@ -21,6 +22,8 @@ export class FirestoreDataService {
 
     activeLoadCollection: AngularFirestoreCollection<ActiveLoad>;
     activeLoads:Observable<ActiveLoad[]>;
+    pastLoads:Observable<Load[]>;
+
     trucks:Observable<Truck[]>;
     users:Observable<User[]>;
 
@@ -61,13 +64,24 @@ export class FirestoreDataService {
                 data.loadId = a.payload.doc.id
                 return data
               }))
-
+        )
+        this.pastLoads = this.firebase.collection('Load').snapshotChanges().pipe(
+            map(actions => actions.map(a => {
+                const data = a.payload.doc.data() as Load;
+                data.id = a.payload.doc.id
+                return data
+              }))
         )
     }
 
     getActiveLoads(){
         return this.activeLoads
     }
+
+    getPastLoads(){
+        return this.pastLoads
+    }
+
 
     getTrucks(){
         return this.trucks
@@ -86,6 +100,17 @@ export class FirestoreDataService {
               }))
         )
         return this.truckCommandSub
+    }
+   
+    lastReportedAt(sl:string){
+         return this.firebase.collection("Device").doc(sl).valueChanges()
+        //.snapshotChanges().pipe(
+        //     map(actions => actions.map(a => {
+        //         const data = a.payload.doc.data() as Device;
+        //         data.id = a.payload.doc.id
+        //         return data
+        //         }))
+        //     )
     }
     
     getLoadEvents(){
@@ -107,6 +132,7 @@ export class FirestoreDataService {
     }
 
     subcribeToLoadEvents(loadId:string):Observable<LoadEvents[]>{
+        console.log(`subcribeToLoadEvents, Load id ${loadId}`)
         this.loadEvents = this.firebase.doc(`LoadEvents/${loadId}`).collection(loadId, x=> x.orderBy('at', 'asc')).snapshotChanges().pipe(
             map(actions => actions.map(a => {
                 const data = a.payload.doc.data() as LoadEvents;
@@ -116,6 +142,20 @@ export class FirestoreDataService {
         )
         return this.loadEvents
     }
+
+
+
+    // subcribeToPastLoadEvents(loadId:string):Observable<LoadEvents[]>{
+    //     console.log(`subcribeToLoadEvents, Load id ${loadId}`)
+    //     this.pastLoadEvents = this.firebase.doc(`LoadEvents/${loadId}`).collection(loadId).snapshotChanges().pipe(
+    //         map(actions => actions.map(a => {
+    //             const data = a.payload.doc.data() as LoadEvents;
+    //             data.id = a.payload.doc.id
+    //             return data
+    //           }))
+    //     )
+    //     return this.pastLoadEvents
+    // }
 
    
 

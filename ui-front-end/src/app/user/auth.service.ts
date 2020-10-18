@@ -10,6 +10,7 @@ export class AuthService {
     constructor(private _data: FirestoreDataService) { 
         this.subscribeTrucks()
     }
+    //todo: need to turn false after testing
     loggedIn = false;
     
     isAuthenticated() {

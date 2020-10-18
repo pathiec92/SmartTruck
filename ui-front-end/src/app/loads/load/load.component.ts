@@ -7,7 +7,7 @@ import { ConnectProgress, Alert, INIT, CONNECTING,
 
 import { FirestoreDataService } from '../../service/firestore-data.service';
 import { LoadEvents } from '../../shared/LoadEvents';
-import { Load, ActiveLoad, TruckAck} from '../../shared/Load';
+import { Load, ActiveLoad, TruckAck, Device} from '../../shared/Load';
 import { UUID } from 'angular2-uuid';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Command } from 'src/app/shared/Command';
@@ -35,14 +35,11 @@ export class LoadComponent implements OnInit, OnDestroy{
   startCounterSub: Subscription = null
   stopCounterSub: Subscription = null
   activeLoadSub: Subscription = null
-  cmdCounterSub: Subscription = null
   truckId:string=""
   sl:string = ""
-
-
-  command=""
-  arguments=""
-  servingCmd = false
+  past:string="past"
+  cmd:string="command"
+  lastReportedAt:string=""
 
   constructor(private zone:NgZone, private _data: FirestoreDataService,
     private route:ActivatedRoute) {
@@ -52,7 +49,6 @@ export class LoadComponent implements OnInit, OnDestroy{
   ngOnInit() {
     this.truckId = this.route.snapshot.params['truckId']
     this.sl = this.route.snapshot.params['sl']
-    this.subscribeTruckCommand()
     this.route.params.subscribe(
       (param:Params) => {
         this.truckId = param['truckId']
@@ -61,42 +57,27 @@ export class LoadComponent implements OnInit, OnDestroy{
         this.subscribeToActiveLoad()
       }
     )
-  }
-
-  subscribeTruckCommand():void{
-    this._data.subScribeTruckCommand(this.truckId).subscribe(
-      (al:Command[]) => {
-        console.log(`Command ${al}, length = ${al.length}`)
-        if(al.length>0 && al[0].ack !=null ){
-          console.log(`Command ${al[0].command}, length = ${al.length}`)
-          this.tripStatus = CMD_SENT_SUCCESS
-          this.servingCmd = false
-          if(this.cmdCounterSub != null){
-            this.cmdCounterSub.unsubscribe()
-          }
-        }
+    this._data.lastReportedAt(this.sl).subscribe(
+      (al:Device) => {
+        //console.log(`Devices length = ${al.length}`)
+        if(al != undefined) 
+        this.lastReportedAt = this.convertTime(al.at)
+        //al.forEach(x=> this.lastReportedAt = this.convertTime(x.at))
+        
+        // if(this.pastLoadSub!=null){
+        //   this.pastLoadSub.unsubscribe()
+        // }
       }
     )
   }
-  send(): void{
-    if(this.command.length>0 && this.arguments.length>0){
-      console.log("Command = "+this.command)
-      console.log("Arguments = "+this.arguments)
-      this._data.sendCommand(this.truckId,new Command(this.truckId, this.command, this.arguments))
-      this.command = ""
-      this.arguments = ""
-      this.servingCmd = true
-      this.tripStatus = CMD_SENDING
-      this.cmdCounterSub =  this.counter(()=>{
-        this.tripStatus = CMD_SENT_FAIL
-        this.servingCmd = false
-        this.cmdCounterSub.unsubscribe()
-        this.cmdCounterSub = null
-      })
-    } else{
-      console.log("Command and arguments should not be empty")
-    }
+
+  private convertTime(epoch:number){
+    var nd = new Date(0)
+    nd.setUTCMilliseconds(epoch)
+    return nd.toLocaleString();
   }
+  
+  
 
   private subscribeToActiveLoad(){
     this.tripEvents=[]
@@ -122,6 +103,9 @@ export class LoadComponent implements OnInit, OnDestroy{
             this.isStarted = this.activeLoad!= null && this.activeLoad.truckAck != null
             //waiting for truck ack
             this.isLoading = this.activeLoad!= null && this.activeLoad.truckAck == null
+            if(this.isLoading) {
+              this.startCounterSub =  this.counter(()=>{if(this.isLoading)this.tripStatus = CONNECTING_FAILED})
+            }
             this.updateButtonStatus()  
             this.updateProgress()
             //this._data.publishLoadEvent(this.activeLoad.loadId, INFO,"Load Started Request Accepted")
@@ -162,7 +146,7 @@ export class LoadComponent implements OnInit, OnDestroy{
    this.startCounterSub =  this.counter(()=>{
       // this.isStarted = true
       // this.isLoading = false
-      this.tripStatus = CONNECTING_FAILED
+      if(this.isLoading) this.tripStatus = CONNECTING_FAILED
       // this.updateButtonStatus()
     })
   }
@@ -263,9 +247,7 @@ export class LoadComponent implements OnInit, OnDestroy{
     if(this.startCounterSub!=null){
       this.startCounterSub.unsubscribe()
     }
-    if(this.cmdCounterSub!=null){
-      this.cmdCounterSub.unsubscribe()
-    }
+    
     if(this.stopCounterSub!=null){
       this.stopCounterSub.unsubscribe()
     }

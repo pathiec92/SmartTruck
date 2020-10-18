@@ -5,12 +5,27 @@
       <h2>Welcome Guest!</h2>
     </pre> 
     <hr> -->
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" [routerLink]="['../']">Truck Status
+                <i class="fa fa-home"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" [routerLink]="[past]">History</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" [routerLink]="[past,cmd]">Truck Config</a>
+        </li>
+    </ul>
 <div class="container">
     <div class="row">
         <div class="col-xs-8">
             <h4 >
                 <ngb-alert type="info" [dismissible]="false">
-                <strong>Truck number: {{truckId}}</strong> 
+                <strong>Truck number: {{truckId}}</strong> <br>
+                <strong>Last Seen: {{lastReportedAt}}</strong>
                 </ngb-alert>
             </h4>
         </div>
@@ -29,30 +44,7 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-xs-12 col-sm-10 col-md-8 col-sm-offset-1 col-md-offset-2">
-            <div class="form-group">
-                <label for="command">Command</label>
-                <input
-                  type="text"
-                  id="name"
-                  class="form-control"
-                  [(ngModel)]="command">
-            </div>
-            <div class="form-group">
-                <label for="arguments">Arguments</label>
-                <input
-                  type="text"
-                  id="name"
-                  class="form-control"
-                  [(ngModel)]="arguments">
-            </div>
-            <button
-            class="btn btn-primary" [disabled]= servingCmd
-            (click)="send()">Send Command</button>
-           
-        </div>
-    </div>
+   
     &nbsp;&nbsp;
     <ngb-progressbar [type]="tripStatus.type" value="100" [striped]="true" [animated]="true">
         <b>{{tripStatus.message}} {{tripStatus.value}}%</b></ngb-progressbar>

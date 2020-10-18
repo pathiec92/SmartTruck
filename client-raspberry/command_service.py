@@ -1,11 +1,18 @@
 from log import *
 from firestore_service import *
 from configs import *
+import threading
+from slot import *
+import os
 
+diagInstance = "diag"
+mainInstance = "main"
 class Command:
      def __init__(self, truckId, fStore, configs):
         self.commands:""
         self.restartCommand = RestartCommand()
+        self.rebootCommand = RebootCommand()
+
         self.nullCommand = NullCommand()
         self.truckId = truckId
         self.fStore = fStore
@@ -13,8 +20,8 @@ class Command:
         return
     
      def serve(self, doc_snapshot, changes, read_time):
-         print(u'received command document {0}'.format(doc_snapshot))
-         logger.info(u'received command document {0}'.format(doc_snapshot))
+        # print(u'received command document {0}'.format(doc_snapshot))
+         #logger.info(u'received command document {0}'.format(doc_snapshot))
          for doc in doc_snapshot:
             logger.info(u'Serving command : {} => {}'.format(doc.id, doc.to_dict()))
             print(u'Serving command : {} => {}'.format(doc.id, doc.to_dict()))
@@ -41,14 +48,20 @@ class Command:
 
 
      def getCommand(self, command):
-        if command == 'restart':
+        logger.info(u'serving command instance {}'.format(self.fStore.instance))
+        if command == 'restart' and self.fStore.instance == diagInstance:
             return self.restartCommand
+        if command == 'reboot' and self.fStore.instance == diagInstance:
+            return self.rebootCommand
         elif command == 'configs' :
             return self.updateConfig
         else :
             return self.nullCommand
 
+def onSlotComplete(duration):
+    print('Command service onSlotComplete')
 
+slt = slot(onSlotComplete)
 
 
 class InFaceCommand:
@@ -64,8 +77,30 @@ class NullCommand(InFaceCommand):
 
 class RestartCommand (InFaceCommand):
     def execute(self, args=''):
-        logger.info('Restarting app')
+        logger.info(u'Application will restart in 10 seconds')
+        t= threading.Thread(target=slt.schedule,args=(10, self.restartDevice))
+        t.start()  
         return super().execute(args=args)
+    
+    def restartDevice(self):
+       logger.info('Restarting app')
+       os.system('ps axf | grep human_detect | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
+       print('Starting human-detection')
+       os.system('cd ~/SmartTruck/client-raspberry; python3 human_detect.py -c config/config.json')
+
+
+class RebootCommand (InFaceCommand):
+    def execute(self, args=''):
+        logger.info(u'Device will reboot in 15 seconds')
+        t= threading.Thread(target=slt.schedule,args=(15, self.rebootDevice))
+        t.start()        
+        return super().execute(args=args)
+    
+    def rebootDevice(self):
+        logger.info(u'Rebooting Device')
+        os.system('reboot')
+        
+
 
 class UpdateConfigCommand(InFaceCommand):
     def __init__(self, configs):

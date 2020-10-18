@@ -18,27 +18,53 @@ from configs import *
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
 firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com')
 
+
 class FireStoreService:
     def __init__(self,truckId = ""):
         self.shouldRunService = False
         firebase_admin.initialize_app()
         self.db = firestore.client()
         self.configs = Configs()
-        self.truckId = self.configs.truckId
         self.command = Command(truckId, self, self.configs)
-        
+        self.subscribeTruckId()
+        self.instance=""
         #self.activeload_ref = self.db.collection(u'ActiveLoad')
+    
+    def subscribeTruckId(self):
+        logger.info(u'Subscribing for subscribeTruckId')
+        #print(u'Subscribing for truckId {}'.format(self.configs.serialNum))
+        doc_ref = self.db.collection('Truck')
+        # Watch the document
+        return doc_ref.on_snapshot(self.truckIdSubscription)
+
+    def truckIdSubscription(self, doc_snapshot, changes, read_time):
+         #print(u'received command document {0}'.format(doc_snapshot))
+         for doc in doc_snapshot:
+            truckId = doc.to_dict().get("truckId")
+            sl = doc.to_dict().get("sl")
+           # logger.info(u'truckIdSubscription self.configs.serialNum = {}, fb.sl = {}, {}'.format(self.configs.serialNum, sl, truckId))
+            if self.configs.serialNum == sl :
+                logger.info(u'Found the device truckId, sl = {}, {}'.format(truckId,sl))
+                self.updateConfigSubCommand(truckId, sl)
+
 
     def subScribeActiveLoad(self):
         doc_ref = self.db.collection(u'ActiveLoad')
         # Watch the document
         return  doc_ref.on_snapshot(self.on_snapshot)
 
+    def updateConfigSubCommand(self, tid,sl):
+        self.configs.serialNum = sl
+        self.configs.truckId = tid
+        currentLoad.truckId = tid
+        self.command = Command(tid, self, self.configs)
+        self.subscribeCommand()
+
     def subscribeCommand(self):
-        logger.info(u'Subscribing for command')
-        print(u'Subscribing for command')
-        truckCol = u'Truck/{0}/command'.format(self.truckId)
-        print(u'Truck collection = {}'.format(truckCol))
+        #print(u'Subscribing for command, truckId {}'.format(self.configs.truckId))
+        truckCol = u'Truck/{0}/command'.format(self.configs.truckId)
+        logger.info(u'Subscribing for command coll={}'.format(truckCol))
+        #print(u'Truck collection = {}'.format(truckCol))
         doc_ref = self.db.collection(truckCol)
         # Watch the document
         return doc_ref.on_snapshot(self.command.serve)
@@ -53,14 +79,12 @@ class FireStoreService:
             return
         isActiveLoadAvail = False
         for doc in doc_snapshot:
-            logger.info(u'Received document snapshot: {} => {}'.format(doc.id, doc.to_dict()))
+            #logger.info(u'Received document snapshot: {} => {}'.format(doc.id, doc.to_dict()))
             truckId = doc.to_dict().get("truckId")
             sl = doc.to_dict().get("sl")
-            logger.info(u'self.configs.serialNum = {}, fb.sl = {}, {}'.format(self.configs.serialNum, sl, truckId))
+            #logger.info(u'self.configs.serialNum = {}, fb.sl = {}, {}'.format(self.configs.serialNum, sl, truckId))
             if self.configs.serialNum == sl :
                 isActiveLoadAvail = True
-                self.configs.serialNum = sl
-                self.configs.truckId = truckId
                 logger.info(u'found my truck {}'.format(truckId))
                 loadId = doc.to_dict().get("loadId")
                 truckAck = doc.to_dict().get("truckAck")
@@ -73,10 +97,11 @@ class FireStoreService:
                             u'ownerName': "Pampi"
                         }
                     }
-                    logger.info(u'START FRAUD DETECTION SERVICE')
+                    
                     doc_ref.document(loadId).update(data)
                     self.uploadLoadEvent("Started Fraud detection service at truck")
-                self.shouldRunService = True            
+                self.shouldRunService = True 
+                logger.info(u'START FRAUD DETECTION SERVICE')           
                 break
         if isActiveLoadAvail is False:
             self.stopService()
@@ -114,7 +139,7 @@ class FireStoreService:
 
 
     def uploadVLink(self,vlink):
-        v = video(currentLoad.loadId, currentLoad.truck.truckId, vlink, currentSlot)
+        v = video(currentLoad.loadId, self.configs.truckId, vlink, currentSlot)
         if isConnected():
             self.uploadVLinkDic(v.getEvent())
         else :
