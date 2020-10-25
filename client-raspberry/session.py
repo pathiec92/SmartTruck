@@ -38,7 +38,7 @@ class session:
         self.conf = Conf(args["conf"])
         self.session_duration = self.conf["session_duration"] + SESSION_BUFFER
         self.onSessionComplete = onSessionComplete
-        self.cloud = Gcloud(self.conf, fservice)
+        self.cloud = Gcloud(fservice)
         self.fservice = fservice
         self.slotStartTime = datetime.now()
         #self.scheduler = sched.scheduler(time.time, time.sleep)
@@ -81,6 +81,8 @@ class session:
         if(self.isDetected):
            # logger.info("Capturing the frame")
             self.startNewSlotIfNot(frame)
+		# CHECK THIS
+#		 self.rcd.recordFrame(frame)
 
     def startNewSlotIfNot(self,frame):
         if(self.isSlotRunning):

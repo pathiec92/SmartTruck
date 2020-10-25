@@ -40,6 +40,8 @@ export class LoadComponent implements OnInit, OnDestroy{
   past:string="past"
   cmd:string="command"
   lastReportedAt:string=""
+  lastReportedAt1:string=""
+
 
   constructor(private zone:NgZone, private _data: FirestoreDataService,
     private route:ActivatedRoute) {
@@ -62,6 +64,7 @@ export class LoadComponent implements OnInit, OnDestroy{
         //console.log(`Devices length = ${al.length}`)
         if(al != undefined) 
         this.lastReportedAt = this.convertTime(al.at)
+        this.lastReportedAt1 = al.dt
         //al.forEach(x=> this.lastReportedAt = this.convertTime(x.at))
         
         // if(this.pastLoadSub!=null){

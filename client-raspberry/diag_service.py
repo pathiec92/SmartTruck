@@ -16,6 +16,7 @@ class DiagService:
         self.slt = slot(self.onSlotComplete)
         self.fireStoreService = FireStoreService()
         self.fireStoreService.instance = 'diag'
+        print('publishing device id')
         self.fireStoreService.publishDeviceId()
 
     def onSlotComplete(self, duration):
@@ -38,6 +39,7 @@ class DiagService:
     def stopProcess(self, grep):
         os.system('ps axf | grep human_detect | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
         print('Starting human-detection')
+#		os.system('cd /home/satyol/cambot; python3 human_detect.cpython-37.pyc -c config/config.json')
         os.system('cd ~/SmartTruck/client-raspberry; python3 human_detect.py -c config/config.json')
         
 #diag = DiagService()

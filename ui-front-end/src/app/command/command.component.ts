@@ -5,6 +5,9 @@ import { take } from 'rxjs/operators';
 import { FirestoreDataService } from '../service/firestore-data.service';
 import { Command } from '../shared/Command';
 import { CMD_SENDING, CMD_SENT_FAIL, CMD_SENT_SUCCESS, ConnectProgress, INIT, INIT_CMD } from '../shared/util';
+import { UUID } from 'angular2-uuid';
+import { LogLink } from '../shared/Load';
+import { nextTick } from 'process';
 
 @Component({
   selector: 'app-command',
@@ -19,6 +22,9 @@ export class CommandComponent implements OnInit , OnDestroy{
   arguments=""
   servingCmd = false
   cmdCounterSub: Subscription = null
+  logLinkSub: Subscription = null
+  logLinks:LogLink[] = []
+  logId = UUID.UUID()
 
   constructor(private zone:NgZone, private _data: FirestoreDataService,
     private route:ActivatedRoute) { }
@@ -27,9 +33,21 @@ export class CommandComponent implements OnInit , OnDestroy{
     this.truckId = this.route.snapshot.params['truckId']
     this.sl = this.route.snapshot.params['sl']
     this.subscribeTruckCommand()
-
+    this.subScribeLogs()
   }
-
+  subScribeLogs(){
+    console.log(`subscribing for logs id = ${this.logId}`)
+    this.logLinkSub = this._data.subscribeOnLogId(this.logId)
+        .subscribe(
+          (al:LogLink[]) => {
+            console.log(`LogLinks length = ${al.length}`)
+            if(al.length>0 ){
+              console.log(`Received the logs link = ${al[0]}`)
+              this.logLinks = al
+            }
+          }
+        )    
+  }
   subscribeTruckCommand():void{
     this._data.subScribeTruckCommand(this.truckId).subscribe(
       (al:Command[]) => {
@@ -48,8 +66,14 @@ export class CommandComponent implements OnInit , OnDestroy{
 
   send(): void{
     if(this.command.length>0 && this.arguments.length>0){
+      if(this.command == 'logs'){
+        
+        this.arguments = this.logId+'$'+this.arguments
+           
+      }
       console.log("Command = "+this.command)
       console.log("Arguments = "+this.arguments)
+
       this._data.sendCommand(this.truckId,new Command(this.truckId, this.command, this.arguments))
       this.command = ""
       this.arguments = ""
@@ -69,6 +93,9 @@ export class CommandComponent implements OnInit , OnDestroy{
   ngOnDestroy(){
     if(this.cmdCounterSub!=null){
       this.cmdCounterSub.unsubscribe()
+    }
+    if(this.logLinkSub!=null){
+      this.logLinkSub.unsubscribe()
     }
   }
   private counter(callback:()=>void): Subscription{

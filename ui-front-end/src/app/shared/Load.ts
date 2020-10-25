@@ -56,7 +56,17 @@ export class Device {
     constructor (
         public id:string = "",
         public sl:string = "",
-        public at:number=0
+        public at:number=0,
+        public dt:string=""
+    ){}
+}
+
+export class LogLink{
+    constructor (
+        public logId:string = "",
+        public truckId:string = "",
+        public links:string[] = [],
+        public at:string=""
     ){}
 }
 

@@ -43,3 +43,17 @@
     </div>
    </div>
 
+   <div class="row">
+    <div class="list-group" *ngFor="let lLink of logLinks" >
+             <ngb-alert type="info" [dismissible]="false" >
+                {{lLink.at}}
+            </ngb-alert>
+            <div *ngFor="let l of lLink.links">
+                <ngb-alert type="dark" [dismissible]="false" >
+                    {{l}}
+                </ngb-alert>
+            </div>
+        
+        
+    </div>
+   </div>
