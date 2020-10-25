@@ -16,6 +16,11 @@ class Configs:
         logger.info(u"Configs are {}".format(args))
         conf = Conf(args["conf"])
         self.truckId= conf["truckId"]
+        self.picamera= conf["picamera"]
+        self.camRotate180= conf["camRotate180"]
+        self.camRotate90= conf["camRotate90"]
+        self.camRotateC90= conf["camRotateC90"]
+        self.automeanCal= conf["automeanCal"]
         self.truckenvithresh= conf["truckenvithresh"]
         self.open_threshold_seconds= conf["open_threshold_seconds"]
         self.sms_to= conf["sms_to"]

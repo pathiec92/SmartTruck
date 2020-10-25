@@ -11,7 +11,7 @@ export class AuthService {
         this.subscribeTrucks()
     }
     //todo: need to turn false after testing
-    loggedIn = false;
+    loggedIn = true;
     
     isAuthenticated() {
         const promise = new Promise(

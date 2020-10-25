@@ -45,9 +45,13 @@ interface Load {
 export class LoadsComponent implements OnInit, OnDestroy {
 
   trucks:Truck[] = []
+  truckArray: Truck[][] = [[]]
   activeLoadSub: Subscription = null
+  numbers = [1,2,3]
+  divSet = 6
 
   constructor(private _data: FirestoreDataService) { 
+    
   }
 
   ngOnInit(): void {
@@ -59,16 +63,23 @@ export class LoadsComponent implements OnInit, OnDestroy {
       this.activeLoadSub.unsubscribe()
     }
   }
+  private arrayToMatrix = (array:Truck[], columns:number) => Array(Math.ceil(array.length / columns)).fill('').reduce((acc, cur, index) => {
+    return [...acc, [...array].splice(index * columns, columns)]
+  }, [])
   private subscribeTrucks(){
     if(this.activeLoadSub!=null){
       this.activeLoadSub.unsubscribe()
     }
     this.activeLoadSub = this._data.getTrucks().subscribe(
       (trucks:Truck[]) => {
+       
         console.log(`active trucks length = ${trucks.length}`)
         this.trucks = trucks.filter((t,i, a)=> {
           return t.sl !== null &&  t.sl !== undefined && t.sl.length>0
         })
+        var numSets = ((this.trucks.length - (this.trucks.length % this.divSet) )/ this.divSet ) +1
+        console.log(`Number of sets = ${numSets}`)
+        this.truckArray = this.arrayToMatrix(this.trucks, this.divSet)
       }
     )
   }

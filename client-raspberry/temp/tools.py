@@ -12,7 +12,7 @@ class state:
         self.isPrevRecording = False
         self.startTime = datetime.now()
         self.writer = None
-        self.cloud = Gcloud(conf, fservice)
+        self.cloud = Gcloud( fservice)
         # self.W = None
         # self.H = None
         self.tempVideo = None

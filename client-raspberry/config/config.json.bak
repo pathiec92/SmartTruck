@@ -2,15 +2,10 @@
 	"truckId":"KA03HM4740",
 	"owner":"Shiva",
 
-	// indicate whether the picamera should be used
- 	"picamera": false,
-	"camRotate180": false,
-	"camRotate90": false,
-	"camRotateC90": false,
+	"picamera": -1,
 	
-	"automeanCal": false,
-	"truckenvithresh": 50,
-	//"truckenvithresh": 60,
+	//"truckenvithresh": 110,
+	"truckenvithresh": 60,
 	"open_threshold_seconds": 10,
 
 	"sms_to": 9886065056,
@@ -26,5 +21,6 @@
 
 	"confidence": 0.25,
 
-	"defaul_sl":"DevTestDevice1"
+	// key clips before/affer buffer and codec
+	"keyclipwriter_buffersize": 50
 }

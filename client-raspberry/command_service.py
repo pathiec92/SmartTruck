@@ -4,11 +4,16 @@ from configs import *
 import threading
 from slot import *
 import os
+from logupload import LogUpload
+from repo import Gcloud
+
+
 
 diagInstance = "diag"
 mainInstance = "main"
 class Command:
      def __init__(self, truckId, fStore, configs):
+        print('Creating the command')
         self.commands:""
         self.restartCommand = RestartCommand()
         self.rebootCommand = RebootCommand()
@@ -16,7 +21,10 @@ class Command:
         self.nullCommand = NullCommand()
         self.truckId = truckId
         self.fStore = fStore
+        self.gCloud = Gcloud(fStore)
         self.updateConfig = UpdateConfigCommand(configs)
+        self.logUploadCommand = LogUploadCommand(self.gCloud)
+        
         return
     
      def serve(self, doc_snapshot, changes, read_time):
@@ -53,6 +61,8 @@ class Command:
             return self.restartCommand
         if command == 'reboot' and self.fStore.instance == diagInstance:
             return self.rebootCommand
+        if command == 'logs' and self.fStore.instance == diagInstance:
+            return self.logUploadCommand
         elif command == 'configs' :
             return self.updateConfig
         else :
@@ -86,6 +96,7 @@ class RestartCommand (InFaceCommand):
        logger.info('Restarting app')
        os.system('ps axf | grep human_detect | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
        print('Starting human-detection')
+	   #os.system('cd /home/satyol/cambot; python3 human_detect.cpython-37.pyc -c config/config.json')
        os.system('cd ~/SmartTruck/client-raspberry; python3 human_detect.py -c config/config.json')
 
 
@@ -99,6 +110,25 @@ class RebootCommand (InFaceCommand):
     def rebootDevice(self):
         logger.info(u'Rebooting Device')
         os.system('reboot')
+
+class LogUploadCommand (InFaceCommand):
+    def __init__(self, gCloud):
+        super().__init__()
+        print(u'LogUploadCommand  created')
+        self.logupload = LogUpload(gCloud)
+         
+
+    def execute(self, args=''):
+        logger.info(u'Command: Uploading the logs')
+        logargs = args.split('$')
+        logNum = 0
+        logId = "temp"
+        if len(logargs)>1 :
+            logId = logargs[0]
+            logNum = int(logargs[1])
+
+        self.logupload.uploadLogs(logId, logNum)
+        return super().execute(args=args)
         
 
 

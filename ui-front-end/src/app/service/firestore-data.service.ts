@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core'
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { Observable } from 'rxjs';
 import { LoadEvents } from '../shared/LoadEvents';
-import { Load, ActiveLoad, TruckAck, Truck, User, Device } from '../shared/Load';
+import { Load, ActiveLoad, TruckAck, Truck, User, Device, LogLink } from '../shared/Load';
 import { map, take, ignoreElements} from 'rxjs/operators';
 import { INFO } from '../shared/util';
 import { UUID } from 'angular2-uuid';
@@ -89,6 +89,16 @@ export class FirestoreDataService {
 
     getUsers(){
         return this.users
+    }
+
+    subscribeOnLogId(logId:string){
+        return this.firebase.collection('LogLink').doc(logId).collection(logId).snapshotChanges().pipe(
+            map(actions => actions.map(a => {
+                const data = a.payload.doc.data() as LogLink;
+                data.logId = a.payload.doc.id
+                return data
+              }))
+        )
     }
 
     subScribeTruckCommand(truckId:string){
