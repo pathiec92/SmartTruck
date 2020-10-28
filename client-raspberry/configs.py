@@ -27,6 +27,10 @@ class Configs:
         self.session_duration=conf["session_duration"]
         self.confidence= conf["confidence"]
         self.serialNum = conf["defaul_sl"]
+        self.camRotate180 = conf["camRotate180"]
+        self.camRotate90 = conf["camRotate90"]
+        self.camRotateC90 = conf["camRotateC90"]
+
         sl = getserial()
         if sl != 'unknown':
             self.serialNum = sl
@@ -50,9 +54,42 @@ class Configs:
             'truckId': self.updateTruckId,
             'truckenvithresh': self.updateTruckenvithresh,
             'sms_to': self.updatePhNum,
-            'confidence': self.updateConfidence,
+            'camRotate180': self.updateCamRotate180,
+            'camRotate90': self.updateCamRotate90,
+            'camRotateC90': self.updateCamRotateC90
+
         }[x]
 
+    def updateCamRotate180(self, id):
+        if id is None and id == '':
+            logger.info('updateCamRotate180 Invalid truck id')
+        else :
+            logger.info('Updating the updateCamRotate180 {}'.format(id))
+            if id == 'true' :
+                self.camRotate180 = True
+            else :
+                self.camRotate180 = False
+
+    def updateCamRotate90(self, id):
+        if id is None and id == '':
+            logger.info('updateCamRotate90 Invalid truck id')
+        else :
+            logger.info('Updating the updateCamRotate90 {}'.format(id))
+            if id == 'true' :
+                self.camRotate90 = True
+            else :
+                self.camRotate90 = False
+    
+    def updateCamRotateC90(self, id):
+        if id is None and id == '':
+            logger.info('camRotateC90 Invalid truck id')
+        else :
+            logger.info('Updating the camRotateC90 {}'.format(id))
+            if id == 'true' :
+                self.camRotateC90 = True
+            else :
+                self.camRotateC90 = False
+    
 
     def updateTruckId(self, id):
         if id is None and id == '':
