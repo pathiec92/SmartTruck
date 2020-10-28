@@ -4,7 +4,7 @@
 
 	// indicate whether the picamera should be used
  	"picamera": false,
-	"camRotate180": false,
+	"camRotate180": true,
 	"camRotate90": false,
 	"camRotateC90": false,
 	

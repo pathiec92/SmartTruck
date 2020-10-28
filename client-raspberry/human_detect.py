@@ -17,6 +17,8 @@ from util import signal_handler
 import signal
 from log import *
 
+from critical import *
+
 def classify_frame(net, inputQueue, outputQueue):
 	# keep looping
 	while True:
@@ -80,10 +82,11 @@ camRotateC90 = conf["camRotateC90"]
 
 #subscribe for ActiveLoad
 fireStoreService = FireStoreService()
-
+fireStoreService.instance = 'main'
 wait_sub = fireStoreService.subScribeActiveLoad()
 #fireStoreService.subscribeCommand()
-fireStoreService.instance = 'main'
+
+critical = Critical(fireStoreService)
 #s = state(conf, fireStoreService)
 def onSessionComplete():
     logger.info(u"Session completed!!")
@@ -106,7 +109,7 @@ p.start()
 # initialize the video stream, allow the cammera sensor to warmup,
 # and initialize the FPS counter
 logger.info(u"[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+vs = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
 fps = FPS().start()
 
