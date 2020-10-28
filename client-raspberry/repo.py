@@ -6,6 +6,8 @@ from datetime import datetime
 import uuid
 from offline import *
 from log import *
+import os.path
+from os import path
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
 firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com')
@@ -55,11 +57,13 @@ class Gcloud:
             videoBlob = self.bucket.blob("videos/"+filename)
             # Set metadata to blob
             videoBlob.metadata = metadata
-            logger.info(str(videoBlob.upload_from_filename(tempVideo.path)))
+            if path.exists(tempVideo.path):            
+                logger.info(str(videoBlob.upload_from_filename(tempVideo.path)))
+                logger.info(videoBlob.public_url)
+                self.sendSms(filename, new_token, isSendMessage, slotStartTime)
             # delete the temporary file
-            tempVideo.cleanup()
-            logger.info(videoBlob.public_url)
-            self.sendSms(filename, new_token, isSendMessage, slotStartTime)
+                tempVideo.cleanup()
+            
         
         return "videoBlob.public_url"
 
