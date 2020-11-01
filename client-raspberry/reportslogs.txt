@@ -1,0 +1,170 @@
+0
+0
+FireReportService created
+Subscribing for subscribeTruckId
+device truckId, sl = HT2020100001, 10000000b8452810
+Subcribe truckId = HT2020100001
+device truckId, sl = HT2020100002, 1000000024e5bfee
+Subcribe truckId = HT2020100002
+device truckId, sl = HT2020100003, 100000004d206c69
+Subcribe truckId = HT2020100003
+getLoadIds
+[getLoadIds] truckId, sl, loadId = HT2020100001, 10000000b8452810, 7c3217db-c10c-93d0-7549-218bf6eac8a1
+*** subscribeLoad truckId=HT2020100001
+*** subscribeLoad truckId=HT2020100001
+getLoadIds
+[getLoadIds] truckId, sl, loadId = HT2020100003, 100000004d206c69, 7a492983-d414-4e3d-c10f-2708001288c1
+*** subscribeLoad truckId=HT2020100003
+*** subscribeLoad truckId=HT2020100003
+[getLoadIds] truckId, sl, loadId = HT2020100003, 100000004d206c69, c66f7fbc-de53-3313-6246-8450e67a263c
+*** subscribeLoad truckId=HT2020100003
+*** subscribeLoad truckId=HT2020100003
+getLoadIds
+[getLoadIds] truckId, sl, loadId = HT2020100002, 1000000024e5bfee, 8089e0c2-5426-a654-8175-34016fea297f
+*** subscribeLoad truckId=HT2020100002
+*** subscribeLoad truckId=HT2020100002
+getLoadEvents
+getVideoLinks
+getLoadEvents
+[getLoadEvents] loadId, type, msg = 7c3217db-c10c-93d0-7549-218bf6eac8a1, danger, Your Vehicle No. HT2020100001 Door Opened at 11:02:42AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F4b92bc7b-dcfc-4a34-8c03-6f2f7d24869b.avi?alt=media&token=4a5df5a7-15ca-49d3-a44b-06de40770fd4
+[getLoadEvents] loadId, type, msg = 7c3217db-c10c-93d0-7549-218bf6eac8a1, danger, Your Vehicle No. HT2020100001 Door Opened at 01:14:19AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Ff2567eba-551e-4049-b368-1ea399913f67.avi?alt=media&token=650aaa30-7f83-4a8c-bc62-7f8d93483503
+[getLoadEvents] loadId, type, msg = 7c3217db-c10c-93d0-7549-218bf6eac8a1, danger, Your Vehicle No. HT2020100001 Door Opened at 12:39:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fadaf7992-b58e-4508-b993-38ce7ee9533a.avi?alt=media&token=7ffe6acd-da89-4788-9555-ef7c7ce7c58b
+getVideoLinks
+[getVideoLinks] loadId, truckId, vLink = 7c3217db-c10c-93d0-7549-218bf6eac8a1, HT2020100001, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F7d703ac5-dada-4bab-a665-c58d960b16d2.avi?alt=media&token=1320e63f-90f0-462a-aeb7-875c172f1463
+[getVideoLinks] loadId, truckId, vLink = 7c3217db-c10c-93d0-7549-218bf6eac8a1, HT2020100001, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fa526e3ab-7c99-42e7-8670-3798f38a7189.avi?alt=media&token=f963fd87-aa33-4355-a4fe-cac058b18b99
+[getVideoLinks] loadId, truckId, vLink = 7c3217db-c10c-93d0-7549-218bf6eac8a1, HT2020100001, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F38bf0d9c-227f-40a0-bdfb-e101f4c2c29b.avi?alt=media&token=3907e7c3-54f2-4718-bdca-94de8cc0b5e4
+getLoadEvents
+[getLoadEvents] loadId, type, msg = 7a492983-d414-4e3d-c10f-2708001288c1, danger, Your Vehicle No. HT2020100003 Door Opened at 04:43:43PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F2593dc35-2d85-4964-a0df-c1e49e348f15.avi?alt=media&token=d7a8631f-f026-4dec-a6bd-39101155972c
+[getLoadEvents] loadId, type, msg = 7a492983-d414-4e3d-c10f-2708001288c1, danger, Your Vehicle No. HT2020100003 Door Opened at 03:54:02PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F5f25d59f-6a63-4776-ae57-c4433aa7f9fe.avi?alt=media&token=6ab128a7-6194-4433-9c59-310b9d768c9a
+[getLoadEvents] loadId, type, msg = 7a492983-d414-4e3d-c10f-2708001288c1, warning, Attention! Detected Human inside the truck
+getVideoLinks
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+[getVideoLinks] loadId, truckId, vLink = 7a492983-d414-4e3d-c10f-2708001288c1, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+getLoadEvents
+[getLoadEvents] loadId, type, msg = c66f7fbc-de53-3313-6246-8450e67a263c, warning, Attention! Detected Human inside the truck
+[getLoadEvents] loadId, type, msg = c66f7fbc-de53-3313-6246-8450e67a263c, danger, Your Vehicle No. HT2020100003 Door Opened at 03:22:36AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F152fc243-ab6b-47a0-a73e-2ab487b9b5de.avi?alt=media&token=7e48ac82-7e33-46e5-aa2b-ef962902e652
+[getLoadEvents] loadId, type, msg = c66f7fbc-de53-3313-6246-8450e67a263c, danger, Your Vehicle No. HT2020100003 Door Opened at 10:44:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F19192461-8a00-418b-b985-57b7c6ee6b7e.avi?alt=media&token=ee888ce7-80f5-4d7f-8bc4-1d16964d10a6
+getVideoLinks
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+[getVideoLinks] loadId, truckId, vLink = 7a492983-d414-4e3d-c10f-2708001288c1, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+--> Truck :HT2020100001
+----> Load :7c3217db-c10c-93d0-7549-218bf6eac8a1
+<---- Load Events ---->
+------> le :danger,Your Vehicle No. HT2020100001 Door Opened at 11:02:42AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F4b92bc7b-dcfc-4a34-8c03-6f2f7d24869b.avi?alt=media&token=4a5df5a7-15ca-49d3-a44b-06de40770fd4
+------> le :danger,Your Vehicle No. HT2020100001 Door Opened at 01:14:19AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Ff2567eba-551e-4049-b368-1ea399913f67.avi?alt=media&token=650aaa30-7f83-4a8c-bc62-7f8d93483503
+------> le :danger,Your Vehicle No. HT2020100001 Door Opened at 12:39:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fadaf7992-b58e-4508-b993-38ce7ee9533a.avi?alt=media&token=7ffe6acd-da89-4788-9555-ef7c7ce7c58b
+<---- Video Events ---->
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F7d703ac5-dada-4bab-a665-c58d960b16d2.avi?alt=media&token=1320e63f-90f0-462a-aeb7-875c172f1463
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fa526e3ab-7c99-42e7-8670-3798f38a7189.avi?alt=media&token=f963fd87-aa33-4355-a4fe-cac058b18b99
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F38bf0d9c-227f-40a0-bdfb-e101f4c2c29b.avi?alt=media&token=3907e7c3-54f2-4718-bdca-94de8cc0b5e4
+--> Truck :HT2020100002
+----> Load :8089e0c2-5426-a654-8175-34016fea297f
+<---- Load Events ---->
+<---- Video Events ---->
+--> Truck :HT2020100003
+----> Load :7a492983-d414-4e3d-c10f-2708001288c1
+<---- Load Events ---->
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 04:43:43PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F2593dc35-2d85-4964-a0df-c1e49e348f15.avi?alt=media&token=d7a8631f-f026-4dec-a6bd-39101155972c
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 03:54:02PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F5f25d59f-6a63-4776-ae57-c4433aa7f9fe.avi?alt=media&token=6ab128a7-6194-4433-9c59-310b9d768c9a
+------> le :warning,Attention! Detected Human inside the truck
+<---- Video Events ---->
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+----> Load :c66f7fbc-de53-3313-6246-8450e67a263c
+<---- Load Events ---->
+------> le :warning,Attention! Detected Human inside the truck
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 03:22:36AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F152fc243-ab6b-47a0-a73e-2ab487b9b5de.avi?alt=media&token=7e48ac82-7e33-46e5-aa2b-ef962902e652
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 10:44:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F19192461-8a00-418b-b985-57b7c6ee6b7e.avi?alt=media&token=ee888ce7-80f5-4d7f-8bc4-1d16964d10a6
+<---- Video Events ---->
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+Generated cambot report successfully
+0
+0
+FireReportService created
+Subscribing for subscribeTruckId
+device truckId, sl = HT2020100001, 10000000b8452810
+Subcribe truckId = HT2020100001
+device truckId, sl = HT2020100002, 1000000024e5bfee
+Subcribe truckId = HT2020100002
+device truckId, sl = HT2020100003, 100000004d206c69
+Subcribe truckId = HT2020100003
+getLoadIds
+[getLoadIds] truckId, sl, loadId = HT2020100003, 100000004d206c69, 7a492983-d414-4e3d-c10f-2708001288c1
+*** subscribeLoad truckId=HT2020100003
+*** subscribeLoad truckId=HT2020100003
+[getLoadIds] truckId, sl, loadId = HT2020100003, 100000004d206c69, c66f7fbc-de53-3313-6246-8450e67a263c
+*** subscribeLoad truckId=HT2020100003
+*** subscribeLoad truckId=HT2020100003
+getLoadIds
+[getLoadIds] truckId, sl, loadId = HT2020100002, 1000000024e5bfee, 8089e0c2-5426-a654-8175-34016fea297f
+*** subscribeLoad truckId=HT2020100002
+*** subscribeLoad truckId=HT2020100002
+getLoadIds
+[getLoadIds] truckId, sl, loadId = HT2020100001, 10000000b8452810, 7c3217db-c10c-93d0-7549-218bf6eac8a1
+*** subscribeLoad truckId=HT2020100001
+*** subscribeLoad truckId=HT2020100001
+getLoadEvents
+getVideoLinks
+getLoadEvents
+[getLoadEvents] loadId, type, msg = 7a492983-d414-4e3d-c10f-2708001288c1, danger, Your Vehicle No. HT2020100003 Door Opened at 04:43:43PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F2593dc35-2d85-4964-a0df-c1e49e348f15.avi?alt=media&token=d7a8631f-f026-4dec-a6bd-39101155972c
+[getLoadEvents] loadId, type, msg = 7a492983-d414-4e3d-c10f-2708001288c1, danger, Your Vehicle No. HT2020100003 Door Opened at 03:54:02PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F5f25d59f-6a63-4776-ae57-c4433aa7f9fe.avi?alt=media&token=6ab128a7-6194-4433-9c59-310b9d768c9a
+[getLoadEvents] loadId, type, msg = 7a492983-d414-4e3d-c10f-2708001288c1, warning, Attention! Detected Human inside the truck
+getLoadEvents
+[getLoadEvents] loadId, type, msg = 7c3217db-c10c-93d0-7549-218bf6eac8a1, danger, Your Vehicle No. HT2020100001 Door Opened at 11:02:42AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F4b92bc7b-dcfc-4a34-8c03-6f2f7d24869b.avi?alt=media&token=4a5df5a7-15ca-49d3-a44b-06de40770fd4
+[getLoadEvents] loadId, type, msg = 7c3217db-c10c-93d0-7549-218bf6eac8a1, danger, Your Vehicle No. HT2020100001 Door Opened at 01:14:19AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Ff2567eba-551e-4049-b368-1ea399913f67.avi?alt=media&token=650aaa30-7f83-4a8c-bc62-7f8d93483503
+[getLoadEvents] loadId, type, msg = 7c3217db-c10c-93d0-7549-218bf6eac8a1, danger, Your Vehicle No. HT2020100001 Door Opened at 12:39:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fadaf7992-b58e-4508-b993-38ce7ee9533a.avi?alt=media&token=7ffe6acd-da89-4788-9555-ef7c7ce7c58b
+getVideoLinks
+[getVideoLinks] loadId, truckId, vLink = 7c3217db-c10c-93d0-7549-218bf6eac8a1, HT2020100001, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F7d703ac5-dada-4bab-a665-c58d960b16d2.avi?alt=media&token=1320e63f-90f0-462a-aeb7-875c172f1463
+[getVideoLinks] loadId, truckId, vLink = 7c3217db-c10c-93d0-7549-218bf6eac8a1, HT2020100001, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fa526e3ab-7c99-42e7-8670-3798f38a7189.avi?alt=media&token=f963fd87-aa33-4355-a4fe-cac058b18b99
+[getVideoLinks] loadId, truckId, vLink = 7c3217db-c10c-93d0-7549-218bf6eac8a1, HT2020100001, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F38bf0d9c-227f-40a0-bdfb-e101f4c2c29b.avi?alt=media&token=3907e7c3-54f2-4718-bdca-94de8cc0b5e4
+getVideoLinks
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+[getVideoLinks] loadId, truckId, vLink = 7a492983-d414-4e3d-c10f-2708001288c1, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+getVideoLinks
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+[getVideoLinks] loadId, truckId, vLink = 7a492983-d414-4e3d-c10f-2708001288c1, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+[getVideoLinks] loadId, truckId, vLink = c66f7fbc-de53-3313-6246-8450e67a263c, HT2020100003, https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+getLoadEvents
+[getLoadEvents] loadId, type, msg = c66f7fbc-de53-3313-6246-8450e67a263c, warning, Attention! Detected Human inside the truck
+[getLoadEvents] loadId, type, msg = c66f7fbc-de53-3313-6246-8450e67a263c, danger, Your Vehicle No. HT2020100003 Door Opened at 03:22:36AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F152fc243-ab6b-47a0-a73e-2ab487b9b5de.avi?alt=media&token=7e48ac82-7e33-46e5-aa2b-ef962902e652
+[getLoadEvents] loadId, type, msg = c66f7fbc-de53-3313-6246-8450e67a263c, danger, Your Vehicle No. HT2020100003 Door Opened at 10:44:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F19192461-8a00-418b-b985-57b7c6ee6b7e.avi?alt=media&token=ee888ce7-80f5-4d7f-8bc4-1d16964d10a6
+--> Truck :HT2020100001
+----> Load :7c3217db-c10c-93d0-7549-218bf6eac8a1
+<---- Load Events ---->
+------> le :danger,Your Vehicle No. HT2020100001 Door Opened at 11:02:42AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F4b92bc7b-dcfc-4a34-8c03-6f2f7d24869b.avi?alt=media&token=4a5df5a7-15ca-49d3-a44b-06de40770fd4
+------> le :danger,Your Vehicle No. HT2020100001 Door Opened at 01:14:19AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Ff2567eba-551e-4049-b368-1ea399913f67.avi?alt=media&token=650aaa30-7f83-4a8c-bc62-7f8d93483503
+------> le :danger,Your Vehicle No. HT2020100001 Door Opened at 12:39:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fadaf7992-b58e-4508-b993-38ce7ee9533a.avi?alt=media&token=7ffe6acd-da89-4788-9555-ef7c7ce7c58b
+<---- Video Events ---->
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F7d703ac5-dada-4bab-a665-c58d960b16d2.avi?alt=media&token=1320e63f-90f0-462a-aeb7-875c172f1463
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2Fa526e3ab-7c99-42e7-8670-3798f38a7189.avi?alt=media&token=f963fd87-aa33-4355-a4fe-cac058b18b99
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F38bf0d9c-227f-40a0-bdfb-e101f4c2c29b.avi?alt=media&token=3907e7c3-54f2-4718-bdca-94de8cc0b5e4
+--> Truck :HT2020100002
+----> Load :8089e0c2-5426-a654-8175-34016fea297f
+<---- Load Events ---->
+<---- Video Events ---->
+--> Truck :HT2020100003
+----> Load :7a492983-d414-4e3d-c10f-2708001288c1
+<---- Load Events ---->
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 04:43:43PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F2593dc35-2d85-4964-a0df-c1e49e348f15.avi?alt=media&token=d7a8631f-f026-4dec-a6bd-39101155972c
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 03:54:02PM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F5f25d59f-6a63-4776-ae57-c4433aa7f9fe.avi?alt=media&token=6ab128a7-6194-4433-9c59-310b9d768c9a
+------> le :warning,Attention! Detected Human inside the truck
+<---- Video Events ---->
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F51fe2ea6-00cb-400b-9db8-e0b048984acd.avi?alt=media&token=2ce32156-f25d-42bf-940a-b0a056658742
+----> Load :c66f7fbc-de53-3313-6246-8450e67a263c
+<---- Load Events ---->
+------> le :warning,Attention! Detected Human inside the truck
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 03:22:36AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F152fc243-ab6b-47a0-a73e-2ab487b9b5de.avi?alt=media&token=7e48ac82-7e33-46e5-aa2b-ef962902e652
+------> le :danger,Your Vehicle No. HT2020100003 Door Opened at 10:44:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F19192461-8a00-418b-b985-57b7c6ee6b7e.avi?alt=media&token=ee888ce7-80f5-4d7f-8bc4-1d16964d10a6
+<---- Video Events ---->
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F698dad9d-4060-421d-bff0-f22b84085022.avi?alt=media&token=dc15de3e-f70a-40ae-98a3-05d9c63fad1e
+------> ve :https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F6f66f100-0cc1-40a4-91a1-bdae6ac9549f.avi?alt=media&token=849d6729-88b3-403c-a32c-aa7e299e02ee
+Generated cambot report successfully

@@ -1,0 +1,3 @@
+warning,Attention! Detected Human inside the truck
+danger,Your Vehicle No. HT2020100003 Door Opened at 03:22:36AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F152fc243-ab6b-47a0-a73e-2ab487b9b5de.avi?alt=media&token=7e48ac82-7e33-46e5-aa2b-ef962902e652
+danger,Your Vehicle No. HT2020100003 Door Opened at 10:44:13AM and you can view/ download video clip at https://firebasestorage.googleapis.com/v0/b/mycloudstorage-1135.appspot.com/o/videos%2F19192461-8a00-418b-b985-57b7c6ee6b7e.avi?alt=media&token=ee888ce7-80f5-4d7f-8bc4-1d16964d10a6

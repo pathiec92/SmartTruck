@@ -118,7 +118,7 @@ export class LoadComponent implements OnInit, OnDestroy{
             this.loadEventSub = this._data.subcribeToLoadEvents(this.activeLoad.loadId).subscribe(
               (loadEvents:LoadEvents[]) => {
                 this.tripEvents = loadEvents.reverse()
-                console.log(this.tripEvents)
+               // console.log(this.tripEvents)
               }
             )
           }
