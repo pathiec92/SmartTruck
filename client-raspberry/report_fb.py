@@ -7,7 +7,7 @@ import threading
 import time
 import uuid
 from report import *
-
+from datetime import datetime
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
@@ -15,12 +15,14 @@ firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com
 
 
 class FireReportService:
-    def __init__(self,truckId = ""):
+    def __init__(self, start, end):
         self.shouldRunService = False
         firebase_admin.initialize_app()
         self.db = firestore.client()
         self.truckDic = {}
         self. localLoadIdDic = {}
+        self.start = start
+        self.end = end
         print(u'FireReportService created')
     
     def subscribeTruckId(self):
@@ -33,9 +35,9 @@ class FireReportService:
          #print(u'received command document {0}'.format(doc_snapshot))
         c = 0
         for doc in doc_snapshot:
-           if c > 2: 
-               break
-           c+=1
+        #    if c > 2: 
+        #        break
+        #    c+=1
            
            truckId = doc.to_dict().get("truckId")
            sl = doc.to_dict().get("sl")
@@ -54,9 +56,9 @@ class FireReportService:
         c = 0
         print(u'getLoadIds')
         for doc in doc_snapshot:
-           if c > 2: 
-               break
-           c+=1
+        #    if c > 2: 
+        #        break
+        #    c+=1
            truckId = doc.to_dict().get("truckId")
            sl = doc.to_dict().get("sl")
            loadId = doc.to_dict().get("id")
@@ -77,15 +79,18 @@ class FireReportService:
         print(u'getLoadEvents')
         
         for doc in doc_snapshot:
-           if c > 2: 
-               break
-           c+=1
+        #    if c > 2: 
+        #        break
+        #    c+=1
+           at = doc.to_dict().get("at")
            msg = doc.to_dict().get("message")
            type = doc.to_dict().get("type")
            loadId = doc.to_dict().get("loadId")
            if loadId in self.localLoadIdDic:
-                self.localLoadIdDic[loadId].loadEvent.append(u'{},{}'.format(type, msg))
-                print(u'[getLoadEvents] loadId, type, msg = {}, {}, {}'.format(loadId, type, msg))
+                if at > self.start and at < self.end:
+                    lt = (at,u'{},{}'.format(type, msg))
+                    self.localLoadIdDic[loadId].loadEvent.append(lt)
+                    print(u'[getLoadEvents] loadId, type, msg = {}, {}, {}'.format(loadId, type, msg))
 
     def subscribeVideoLink(self, truckId,sl,loadId):
         print(u'*** subscribeLoad truckId={}'.format(truckId))
@@ -96,14 +101,17 @@ class FireReportService:
         c = 0
         print(u'getVideoLinks')
         for doc in doc_snapshot:
-           if c > 2: 
-               break
-           c+=1
+        #    if c > 2: 
+        #        break
+        #    c+=1
+           at = doc.to_dict().get("at")
            truckId = doc.to_dict().get("truckId")
            vLink = doc.to_dict().get("vlink")
            loadId = doc.to_dict().get("loadId")
-           print(u'[getVideoLinks] loadId, truckId, vLink = {}, {}, {}'.format(loadId, truckId, vLink))
-           self.localLoadIdDic[loadId].videoEvent.append(u'{}'.format(vLink))
+           if at > self.start and at < self.end:
+                lt = (at,vLink)
+                print(u'[getVideoLinks] loadId, truckId, vLink = {}, {}, {}'.format(loadId, truckId, vLink))
+                self.localLoadIdDic[loadId].videoEvent.append(lt)
 
     def stichReportNPrint(self):
         for truckId in self.truckDic:
@@ -129,35 +137,48 @@ class FireReportService:
                     print(u'------> ve :{}'.format(l))
     
     def writeReport(self):
-        main = 'report'
+        date = datetime.fromtimestamp(self.start/1000.0)
+        date = date.strftime('%Y-%m-%d')
+        main = u'{}_cambot_reports'.format(date)
         for truckId in self.truckDic:
             truck = self.truckDic[truckId]
-            self.createDir(main+'/'+truckId)
+            #self.createDir(main+'/'+truckId)
             print(u'--> Truck :{}'.format(truckId))
 
             for loadId in truck.loadIdDic:
                 load = truck.loadIdDic[loadId]
-                self.createDir(main+'/'+truckId +'/'+ loadId)
+                #self.createDir(main+'/'+truckId +'/'+ loadId)
                 print(u'----> Load :{}'.format(loadId))
 
                 print(u'<---- Load Events ---->')
                 loadEventsPath = main+'/'+truckId +'/'+ loadId +'/loadEvents.txt'
-                #self.createDir(loadEventsPath)
+                if len(load.loadEvent) == 0:
+                    print('-No records for {}'.format(loadEventsPath))
+                    continue
+                self.createDir(main+'/'+truckId +'/'+ loadId)
                 f= open(loadEventsPath,'w')
                 for l in load.loadEvent:
-                    print(u'------> le :{}'.format(l))                    
-                    f.write(l)
+                    at = l[0]
+                    print(u'le start:{}, end:{}, at:{}'.format(self.start, self.end, at))
+                    
+                    print(u'------> le :{}'.format(l[1]))                    
+                    f.write(l[1])
                     f.write('\n')
                 f.close()
 
 
                 print(u'<---- Video Events ---->')
                 videoLinksPath = main+'/'+truckId +'/'+ loadId +'/videoLinks.txt'
-                #self.createDir(videoLinksPath)
+                if len(load.videoEvent) == 0:
+                    print('-No records for {}'.format(loadEventsPath))
+                    continue
+                self.createDir(main+'/'+truckId +'/'+ loadId)
                 f= open(videoLinksPath,'w')
                 for l in load.videoEvent:
+                    at = l[0]
+                    print(u'le start:{}, end:{}, at:{}'.format(self.start, self.end, at))
                     print(u'------> ve :{}'.format(l))
-                    f.write(l)
+                    f.write(l[1])
                     f.write('\n')
                 f.close()
 
@@ -168,10 +189,3 @@ class FireReportService:
         if not os.path.exists(path):
             os.makedirs(path)
         return path
-
-
-
-
-
-
-    

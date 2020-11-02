@@ -10,7 +10,7 @@ def convert(str):
     try:
         t = int(datetime.fromisoformat(str).timestamp() *1000)
     except:
-        print(u'An exception occurred while parsing the time string {}'.format(str))
+        print(u'An exception occurred while parsing the time string {}, date format: YYYY:MM::DD'.format(str))
         t = time.time() * 1000
     return int(t)
 
@@ -24,8 +24,8 @@ def parse(ar, k):
 
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-s", "--start", 
-	help="Start date is required")
+ap.add_argument("-s", "--start", required=True,
+	help="Start date is required in the format YYYY-MM-DD")
 # ap.add_argument("-e", "--end",  required=True,
 # 	help="End date is required")
 
@@ -33,12 +33,12 @@ args = vars(ap.parse_args())
 start=0
 end= 0
 if parse(args, "start") is not None:
-    start= convert(args["start"]+'T00:00:01.807+00:00')
+    start= float(convert(args["start"]+'T00:00:01.807+00:00'))
 if parse(args, "start") is not None:
-    end= convert(args["start"]+'T23:59:58.807+00:00')
+    end= float(convert(args["start"]+'T23:59:58.807+00:00'))
 
-# print(time.time())
-# print(datetime.now())
+print(time.time())
+print(datetime.now())
 
 
 

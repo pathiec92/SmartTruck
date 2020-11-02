@@ -3,7 +3,7 @@ class PullReport:
     def __init__(self, start, end):
         self.start = start
         self.end = end
-        self.fservice = FireReportService()
+        self.fservice = FireReportService(start, end)
         #self.fservice = FireReportService(self.start,self.end)
 
 
