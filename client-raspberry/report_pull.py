@@ -9,6 +9,10 @@ class PullReport:
 
     def pull(self):
        self.fservice.subscribeTruckId()
+       #self.fservice.subscribe("HT2020101060")
+       #self.fservice.subLoadVideo("HT2020100008", "10000000a49e76f6", "7460ac46-3fe6-a169-f374-5e30173903ec")
+    def isOpDone(self):
+        return self.fservice.isOpDone()
 
     def stichAndPrint(self):
         self.fservice.stichReportNPrint()

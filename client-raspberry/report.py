@@ -7,4 +7,4 @@ class Load:
     def __init__(self,loadId):
         self.loadId = loadId
         self.loadEvent = []
-        self.videoEvent = []
+        self.videoEvent = set()

@@ -33,9 +33,9 @@ args = vars(ap.parse_args())
 start=0
 end= 0
 if parse(args, "start") is not None:
-    start= float(convert(args["start"]+'T00:00:01.807+00:00'))
+    start= float(convert(args["start"]+'T00:00:01.807+05:30'))
 if parse(args, "start") is not None:
-    end= float(convert(args["start"]+'T23:59:58.807+00:00'))
+    end= float(convert(args["start"]+'T23:59:58.807+05:30'))
 
 print(time.time())
 print(datetime.now())
@@ -47,11 +47,19 @@ print(end)
 
 pr = PullReport(start, end)
 pr.pull()
-c = 100
-while True and c > 0:
+c = 2400
+while pr.isOpDone() is False:
     time.sleep(0.25)
     c -= 1
-pr.stichAndPrint()
+print('1. isOpDone:{}, c:{}'.format(pr.isOpDone(), c))
+
+c = 40
+while c>0:
+    time.sleep(0.25)
+    c -= 1
+    
+print('1. isOpDone:{}, c:{}'.format(pr.isOpDone(), c))
+#pr.stichAndPrint()
 
 print('Generated cambot report successfully')
 
