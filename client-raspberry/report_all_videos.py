@@ -7,9 +7,27 @@ import time
 import re
 from datetime import datetime
 from multiprocessing.pool import ThreadPool
+import argparse
+
+def parse(ar, k):
+    v=None
+    try:
+        v=ar[k]
+    except:
+        print('Exceptions')
+    return v
 
 videosFolder=""
 
+ap = argparse.ArgumentParser()
+ap.add_argument("-f", "--folder", required=True,
+	help="Specify the root folder")
+# ap.add_argument("-e", "--end",  required=True,
+# 	help="End date is required")
+
+args = vars(ap.parse_args())
+
+destFolder = parse(args, "folder")
 
 def gestDest(videosFolder):
     destFile= videosFolder+'/'+ str(time.time())+'.avi'
@@ -45,9 +63,12 @@ def fetch_url(entry):
                     f.write(chunk)
     return path
 
+def downloadPath():
+    print('path = {}'.format(os.getcwd()+'/'+destFolder))
+
 def downloadVideos():
     folder = ''
-    for root, subFolders, files in os.walk(os.getcwd()+'/report'):
+    for root, subFolders, files in os.walk(os.getcwd()+'/'+destFolder):
         print(root)
         
         print('--files')
@@ -78,6 +99,8 @@ def downloadVideos():
 
 
 downloadVideos()
+
+#downloadPath()
 
 # while True:
 #     sleep(0.25)

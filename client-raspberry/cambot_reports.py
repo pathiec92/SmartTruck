@@ -2,7 +2,16 @@ import time
 from datetime import datetime
 from report_pull import *
 import argparse
+import os
 
+
+def createDir():
+        path = ""
+        current_directory = os.getcwd()
+        path = os.path.join(current_directory, "rlogs")
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return path
 def convert(str):
     if str is None:
         return 0
@@ -22,6 +31,9 @@ def parse(ar, k):
         print('Exceptions')
     return v
 
+createDir()
+os.system('ps axf | grep report_pull_for_id | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
+print('Starting human-detection')
 
 ap = argparse.ArgumentParser()
 ap.add_argument("-s", "--start", required=True,
@@ -47,13 +59,13 @@ print(end)
 
 pr = PullReport(start, end)
 pr.pull()
-c = 2400
+c = 40
 while pr.isOpDone() is False:
     time.sleep(0.25)
     c -= 1
 print('1. isOpDone:{}, c:{}'.format(pr.isOpDone(), c))
 
-c = 40
+c = 100
 while c>0:
     time.sleep(0.25)
     c -= 1

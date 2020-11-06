@@ -43,13 +43,14 @@ args = vars(ap.parse_args())
 
 pri = PullReportForId(args['id'], int(args['start']), int(args['end']))
 pri.pull()
-c = 50
-while c > 0 and pri.isRecordPulled() is False:
+c = 1000
+# c > 0 and 
+while c > 0 and  pri.isRecordPulled() is False:
     time.sleep(0.25)
     c -= 1
 print('1.[Report] isOpDone:{}, c:{}'.format(pri.isRecordPulled(), c))
-c = 50
-while c > 0 and pri.isRecordPulled() is False:
+c = 1000
+while c > 0:
     time.sleep(0.25)
     c -= 1
 print('2.[Report] isOpDone:{}, c:{}'.format(pri.isRecordPulled(), c))

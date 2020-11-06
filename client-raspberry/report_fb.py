@@ -79,7 +79,7 @@ class FireReportService:
         
     def launchProcess(self, truckId):
         print('Starting new process for truck:{}'.format(truckId))
-        cm = u'cd ~/SmartTruck/client-raspberry; python3 report_pull_for_id.py -id {} -s {} -e {}'.format(truckId,str(int(self.start)),str(int(self.end)))
+        cm = u'cd ~/SmartTruck/client-raspberry; python3 report_pull_for_id.py -id {} -s {} -e {} >>./rlogs/{}.txt &'.format(truckId,str(int(self.start)),str(int(self.end)),truckId)
         print(u'Command : {}'.format(cm))
         os.system(cm)
 
@@ -136,7 +136,6 @@ class FireReportService:
         print(u'{}: LoadEvent truckId:{}, loadId:{}, busy:{}, c:{}'.format(datetime.now(),truckId, loadId, self.leBusy, c))
         
         self.leBusy = False
-        self.isVideoEventsPulled = True
 
 
     def subscribeLoad(self, truckId,sl,loadId):
@@ -165,7 +164,7 @@ class FireReportService:
                     self.localLoadIdDic[loadId].loadEvent.append(lt)
                     print(u'[getLoadEvents] loadId, type, msg = {}, {}, {}'.format(loadId, type, msg))
         self.leBusy = False
-        self.isLoadEventsPulled = False
+        self.isLoadEventsPulled = True
 
     def subscribeVideoLink(self, truckId,sl,loadId):
         print(u'*** subscribeVideoLink truckId={}, loadId={}'.format(truckId, loadId))
@@ -185,13 +184,14 @@ class FireReportService:
            vLink = doc.to_dict().get("vlink")
            loadId = doc.to_dict().get("loadId")
            if loadId in self.localLoadIdDic:
-                #print(u'le start:{}, end:{}, at:{}, is:{}'.format(self.convertToStr(self.start), self.convertToStr(self.end), self.convertToStr(at), at > self.start and at < self.end))
+               #print(u'le start:{}, end:{}, at:{}, is:{}'.format(self.convertToStr(self.start), self.convertToStr(self.end), self.convertToStr(at), at > self.start and at < self.end))
                 if at > self.start and at < self.end:
                         #lt = (at,vLink.strip())
                         print(u'[getVideoLinks] loadId, truckId, vLink = {}, {}, {}'.format(loadId, truckId, vLink))
                         self.localLoadIdDic[loadId].videoEvent.add(vLink.strip())
 
         self.leBusy = False
+        self.isVideoEventsPulled = True
 
     def stichReportNPrint(self):
         for truckId in self.truckDic:
