@@ -8,32 +8,23 @@ import argparse
 # while True and c > 0:
 #     time.sleep(0.25)
 #     c -= 1
-#pr.stichAndPrint()
+# pr.stichAndPrint()
 ap = argparse.ArgumentParser()
-ap.add_argument("-s", "--start", required=True,
-	help="Start date is required")
-ap.add_argument("-e", "--end",  required=True,
-	help="End date is required")
 
+ap.add_argument("-f", "--folder", required=True,
+                help="Specify the root folder")
 args = vars(ap.parse_args())
 
-start= args["start"]+'T00:00:01.807+00:00'
-end= args["end"]+'T00:00:01.807+00:00'
+destFolder = args["folder"]
 
-print(time.time())
-print(datetime.now())
-def convert(str):
-    t = 0
-    try:
-        t = int(datetime.fromisoformat(str).timestamp() *1000)
-    except:
-        print(u'An exception occurred while parsing the time string {}'.format(str))
-    return t
-
-print(convert('2020-11-01T00:00:01.807+00:00'))
-print(convert('x'))
-print(convert(start))
-print(convert(end))
-
-
-
+for root, subFolders, files in os.walk(os.getcwd()+'/'+destFolder):
+    videosFolder = ''
+    if os.path.isdir(root) is True:
+        #print('--root :{}, subFolders: {}, files: {}'.format(root,subFolders,files))
+        vid = os.path.basename(root)
+        if vid == 'videos' and os.path.isdir(root):
+            print('is vid path:'+ vid)
+            #print(u'directory {}'.format(root))
+            for f in files:
+                vf = root+'/'+f
+                print('video :' + vf)

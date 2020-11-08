@@ -69,9 +69,7 @@ def downloadPath():
 def downloadVideos():
     folder = ''
     for root, subFolders, files in os.walk(os.getcwd()+'/'+destFolder):
-        print(root)
-        
-        print('--files')
+        print('--root :'+root)
         videosFolder = ''
         if os.path.isdir(root) is True:
             print(u'directory {}'.format(root))

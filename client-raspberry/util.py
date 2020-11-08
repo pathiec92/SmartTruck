@@ -1,5 +1,5 @@
 import sys
-
+import os
 import time
 
 # function to handle keyboard interrupt
@@ -64,3 +64,20 @@ def getserial():
     if len(cpuserial) ==0 or cpuserial == "" or not cpuserial:
         cpuserial = "unknown"
     return cpuserial
+
+def createDir(folderName):
+	path = ""
+	current_directory = os.getcwd()
+	path = os.path.join(current_directory, folderName)
+	if not os.path.exists(path):
+		os.makedirs(path)
+	return path
+
+def moveVideo(src, dest):
+    createDir(dest)
+    print('move from :{} to:{}'.format(src, dest))
+    os.system('mv {} {}'.format(src, dest))
+    
+
+
+
