@@ -32,7 +32,7 @@ class record :
         ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
         cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX,
                     0.4, (255, 255, 0), 1)
-        # cv2.imshow("Frame", frame)
+        cv2.imshow("Frame", frame)
         self.kcw.update(frame)
 
     def stopRecord(self):

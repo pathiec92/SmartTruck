@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FirestoreDataService } from '../service/firestore-data.service';
 import { Subscription } from 'rxjs';
 import { Truck } from '../shared/Load';
+import { Command } from '../shared/Command';
 
 interface Load {
   id:number;
@@ -82,6 +83,14 @@ export class LoadsComponent implements OnInit, OnDestroy {
         this.truckArray = this.arrayToMatrix(this.trucks, this.divSet)
       }
     )
+  }
+  restartAllDevices(){
+    console.log('collecting logs from all devices')
+    
+    this.trucks.forEach(truck =>  this._data.sendCommand(truck.truckId,new Command(truck.truckId, "logs", `${truck.truckId}$0`)))
+  }
+  rebootAllDevices(){
+
   }
 
   onLoad(load:Load){

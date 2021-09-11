@@ -1,8 +1,4 @@
 {
-  "firestore": {
-    "rules": "yes",
-    "indexes": "yse"
-  },
   "storage": {
     "rules": "storage.rules"
   },

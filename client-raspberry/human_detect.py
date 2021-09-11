@@ -17,6 +17,8 @@ from util import signal_handler
 import signal
 from log import *
 
+from critical import *
+
 def classify_frame(net, inputQueue, outputQueue):
 	# keep looping
 	while True:
@@ -36,7 +38,6 @@ def classify_frame(net, inputQueue, outputQueue):
 
 			# write the detections to the output queue
 			outputQueue.put(detections)
-
 
 logger.info(u'[INFO] loading model...')
 print("logger {}", logger)
@@ -66,6 +67,7 @@ ap.add_argument("-dv", "--delv",  action="store_true",
 args = vars(ap.parse_args())
 logger.info(u"Args1 are {}".format(args))
 
+
 # load the configuration file and initialize the Twilio notifier
 conf = Conf(args["conf"])
 truckId = conf["truckId"]
@@ -74,16 +76,18 @@ currentTruck.owner = conf["owner"]
 confidenceThreshold = conf["confidence"]
 automeanCal = conf["automeanCal"]
 truckenvithresh = conf ["truckenvithresh"]
+camSource = conf["camSource"]
 camRotate180 = conf["camRotate180"]
 camRotate90 = conf["camRotate90"]
 camRotateC90 = conf["camRotateC90"]
 
 #subscribe for ActiveLoad
 fireStoreService = FireStoreService()
-
+fireStoreService.instance = 'main'
 wait_sub = fireStoreService.subScribeActiveLoad()
 #fireStoreService.subscribeCommand()
-fireStoreService.instance = 'main'
+
+critical = Critical(fireStoreService)
 #s = state(conf, fireStoreService)
 def onSessionComplete():
     logger.info(u"Session completed!!")
@@ -106,8 +110,13 @@ p.start()
 # initialize the video stream, allow the cammera sensor to warmup,
 # and initialize the FPS counter
 logger.info(u"[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+if camSource == "USBCamera":
+	vs = VideoStream(src=0).start()
+	#vs = VideoStream(-1).start()
+elif camSource == "PiCamera":
+	vs = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
+
 fps = FPS().start()
 
 starting_time= time.time()
@@ -116,15 +125,17 @@ enviprofileSet = False
 
 enviprofileCounter = 1
 truckmaxthreshmean = 0
+avg = None
 avgmean=0
 dooropenCounter = 1
+doorclosedCounter =1
 truckdoorClose=False
 truckdoorOpen = False
 
 while True:
-	truckenviBright = False
-	truckenviDark = False
+	#motionDetect = False
 	humandetect = False
+	text = "Unoccupied"
 	#logger.info(str(fireStoreService.shouldRunService))
 	if fireStoreService.shouldRunService is False :
 		time.sleep(1)
@@ -164,67 +175,23 @@ while True:
 	
 	# The declaration of CLAHE  
 	# clipLimit -> Threshold for contrast limiting 
-	clahe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(5,5)) 
-	gray = clahe.apply(gray) + 30
+	#clahe = cv2.createCLAHE(clipLimit=5.0, tileGridSize=(5,5)) 
+	#gray = clahe.apply(gray) + 30
 
 	fame_processed = np.zeros_like(frame_original)
 	fame_processed[:,:,0] = gray
 	fame_processed[:,:,1] = gray
 	fame_processed[:,:,2] = gray
 
-	# calculate the average of all pixels where a higher mean
-	# indicates that there is more light coming into the truck
-	mean = np.mean(gray)
-	# print ("Current Mean", mean)
-	
-	if automeanCal:
-		if enviprofileCounter <= 3:
-			avgmean = mean + avgmean
-		else:
-			enviprofileSet = True
-		enviprofileCounter += 1
-
-	if not enviprofileSet:
-		truckmaxthreshmean = (avgmean/3) + truckenvithresh
-		# print ("Avg Mean", avgmean/3)
-		# print ("truckmaxthreshmean",truckmaxthreshmean)
-	else:
-		truckmaxthreshmean = truckenvithresh
-
-		# determine if the environment is changed inside truck
-		# if mean > conf["truckenvithresh"]:
-	# print (mean)
-	if mean > truckmaxthreshmean:
-		truckenviBright = True
-		# print ("Bright Environment")
-	else:
-		truckenviDark = True  
-		# print ("Dark Environment")  
-
-	if dooropenCounter >= conf["min_dooropen_frames"]:
-		if truckenviBright and not truckdoorOpen:
-			truckdoorOpen= True
-			truckdoorClose = False
-			logger.info(u"Truck Inside Status: Door Opened (due to more light coming in...) at {}".format(datetime.now()))
-			print("Truck Inside Status: Door Opened (due to more light coming in...) at ", datetime.now()) 
-			ses.humanDetected(frame_original)
-			ses.isSendMessage = True
-		elif truckenviDark and not truckdoorClose:
-			truckdoorClose = True
-			truckdoorOpen = False
-			logger.info(u"Truck Inside Status: Door Closed (due to low light inside...) at {}".format(datetime.now()))
-			print("Truck Inside Status: Door Closed (due to low light inside...) at ", datetime.now()) 
-		dooropenCounter = 0
-	else:
-		dooropenCounter += 1
-
 	# grab the frame dimensions and convert it to a blob for Human Detection
 	(h, w) = fame_processed.shape[:2]
+	#(h, w) = frame_original.shape[:2]
 
 	# if the input queue *is* empty, give the current frame to
 	# classify
 	if inputQueue.empty():
 		inputQueue.put(fame_processed)
+		#inputQueue.put(frame_original)
 
 	# if the output queue *is not* empty, grab the detections
 	if not outputQueue.empty():
@@ -271,15 +238,26 @@ while True:
 				cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
 				cv2.putText(frame_original, "Truck Status: {}".format("Human Detected"), (10, 20),
 				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+				
 	if humandetect:
-		# logger.info(u"Truck Inside Status: Human Detected at {}".format(datetime.now()))
-		# print("Truck Inside Status: Human Detected at ", datetime.now())
-		ses.humanDetected(frame_original)
-		ses.isSendMessage = True
-		
-			
+		if dooropenCounter >= conf["min_dooropen_frames"]:
+			logger.info(u"Truck Status: Door Opened (Human Detected...) at {}".format(datetime.now()))
+			print("Truck Inside Status: Door Opened (Human Detected...) at ", datetime.now())
+			ses.humanDetected(frame_original)
+			ses.isSendMessage = True
+			dooropenCounter = 0
+		else:
+			dooropenCounter += 1
+	else:
+		if doorclosedCounter >= conf["min_doorclosed_frames"]:
+			#logger.info(u"Truck Status: Door Closed at {}".format(datetime.now()))
+			#print("Truck Status: Door Closed at ", datetime.now()) 		
+			doorclosedCounter = 0
+		else:
+			doorclosedCounter += 1	
 		
 	# show the output frame
+	#cv2.imshow("Frame", frame_original)
 	#cv2.imshow("Frame", frame_original)
 	key = cv2.waitKey(1) & 0xFF
 	# if the `q` key was pressed, break from the loop
@@ -289,7 +267,9 @@ while True:
 	fps.update()
 
 	# stop the timer and display FPS information
+
 fps.stop()
+
 logger.info(u"[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
 logger.info(u"[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 print ("[INFO] approx. FPS: {:.2f}".format(fps.fps()))

@@ -15,8 +15,11 @@ from command_service import *
 from configs import *
 
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
-firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com')
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="MyCloudStorage-3e526dc49133.json"
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="smarttruck-8a93a-c7f7019ed403.json"
+#firebase = firebase.FirebaseApplication('https://mycloudstorage-1135.appspot.com')
+firebase = firebase.FirebaseApplication('https://smarttruck-8a93a.appspot.com')
 
 
 class FireStoreService:

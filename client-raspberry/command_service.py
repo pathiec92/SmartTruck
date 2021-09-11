@@ -17,6 +17,7 @@ class Command:
         self.commands:""
         self.restartCommand = RestartCommand()
         self.rebootCommand = RebootCommand()
+        self.previewCommand = PreviewCommand()
 
         self.nullCommand = NullCommand()
         self.truckId = truckId
@@ -61,6 +62,8 @@ class Command:
             return self.restartCommand
         if command == 'reboot' and self.fStore.instance == diagInstance:
             return self.rebootCommand
+        if command == 'preview' and self.fStore.instance == diagInstance:
+            return self.previewCommand            
         if command == 'logs' and self.fStore.instance == diagInstance:
             return self.logUploadCommand
         elif command == 'configs' :
@@ -87,18 +90,36 @@ class NullCommand(InFaceCommand):
 
 class RestartCommand (InFaceCommand):
     def execute(self, args=''):
-        logger.info(u'Application will restart in 10 seconds')
+        logger.info(u'Human Detection Service will restart in 10 seconds')
         t= threading.Thread(target=slt.schedule,args=(10, self.restartDevice))
         t.start()  
         return super().execute(args=args)
     
     def restartDevice(self):
-       logger.info('Restarting app')
+       logger.info('Restarting The Human Detect Service')
        os.system('ps axf | grep human_detect | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
        print('Starting human-detection')
 	   #os.system('cd /home/satyol/cambot; python3 human_detect.cpython-37.pyc -c config/config.json')
        os.system('cd ~/SmartTruck/client-raspberry; python3 human_detect.py -c config/config.json')
 
+class PreviewCommand (InFaceCommand):
+    def execute(self, args=''):
+        if args == 'start':
+            os.system('ps axf | grep human_detect | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
+            logger.info(u'Device will preview in 15 seconds')
+            print('Device will preview in 15 seconds')
+            t= threading.Thread(target=slt.schedule,args=(15, self.previewDevice))
+            t.start()        
+            return super().execute(args=args)
+        elif args == 'stop':
+           os.system('ps axf | grep webstreaming | grep -v grep | awk \'{print \"kill -9 \" $1}\' | sh')
+           logger.info(u'Cambot Preview Ended')
+           return super().execute(args=args)
+    
+    def previewDevice(self):
+        logger.info(u'Previewing Device')
+        print('Previewing Device')
+        os.system('cd /home/satyol/video_surveillance; python3 webstreaming.py --ip 192.168.0.61 --port 8000')
 
 class RebootCommand (InFaceCommand):
     def execute(self, args=''):

@@ -51,6 +51,6 @@ class state:
 def signal_handler(sig, frame):
     # delete the temporary file
     # tempVideo.cleanup()
-    print("[INFO] You pressed `ctrl + c`! Closing mail detector" \
+    print("[INFO] You pressed `ctrl + c`! Closing human detect service!" \
         " application...")
     sys.exit(0)
