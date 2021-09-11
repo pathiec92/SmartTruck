@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "smarttruck-8a93a",
+  "private_key_id": "c7f7019ed4036748c4b45c05f333db8bd82cda86",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDDVRD7THfiqdoK\n+I4/uE7Hg9RYNwVq3svqF4vGyN+r7Z2CWdYIaunQ47OD/TiNe3U7D0ReC+0a6G9s\nMBz0ys3awYE+kXCxLnjEjpbBBsNYWYVFjsTW9n5KA7C91Z9gdyUXCIkeCYt0uWnx\noroVDo0+7aJDwqZa2vsWRkJtfLZxuFtwJxjN5Q8xWzT7KXeawH1DH5beb2L+cYqY\nUhDIvwqXopgxTWXPnXXZT9qsz8jJgGuH8Zwff+UL63NetVx5QdaAGa+Bcyox8963\nGYK55Fe84hHmhzJTjt1BF068UyloYDjQr/tnReGKgpowpmuJZC3Jv8tV8CUQat0f\nRwY5d1cNAgMBAAECggEAC2bgRmL4zoTOovxORV7rTk8eKoYPrWTS71evg4t/LuiA\nXLcEvNoMyvI3rNkvn2aY+bkS6xB0JzFxK5YFYq6h5IaOFkpkExuc1hBisWLFLVeQ\nZXaHe+rIhWaAvxwEoRtjUVxgsJ2rA8W87utqREdkrEsvwRfQIRaOOIciYoS4m5um\nd1/Woxh4ltSG11ZwyZGUo/GuZ9szzpgL342oU3T7x06BEvc3TPRjmmcoFXnA7Zy8\nsPN9vTP8PnE+mN1x14FN9NZeYhzjkj0TteWsNsXe42X2tOr8H3wIy7/o8LYObvao\nyAYAiSR5tzQpAUg2M97/J7kDsj+8nSe8k4Cr1nfkWwKBgQD/s5lqekwhinHcoERz\n81C+PvXdjfF3eUaE7aI96f1BheaeUmdQpNEr6sVK47hNU29VpBAKdW7ERmNiUYLJ\nlBiskXgb8QtyCwMgjchAJiIl4de+zgXoGpuFcbJSUST7vC7MWN5vVejESKLAVrHE\nRVisgwEHPRW3Esc65B+O0phOCwKBgQDDj23tTVVLQIRixSTHsZVoYzNNrBBUIPdU\nQcFUyVJzBmfu7nAnKDV7br3KEDzliZALcCpUwTS7j5hkbP1kfW0OWhT2zoWFBGZs\nhYGzxmCdk+o6z9nsAIbqNe9DHGIQj7ZxaGh605Adx9rzr6XsfQNwf5TyYz0T9UA1\no25x8EZWRwKBgQDU7IxLAy3UHEH2UyrNVwacdTctV96D+2QCmxMn9WnjnwnMOpg3\nqhdYN7Y0R24YTer+6JBG9UTYgjiODYwYKY9mW/glZFKAk7T17bqb2GVFIEwUYeC/\nRzDMLUItk851JV3e4f3Pvj0G/ekwusBqzMgrVyeLDI3Blgx6+K1is/EJwwKBgQCZ\nFV/x0QWhwMFhJ/4grCzO6Eiy1qx5jszNkiOrIWV/UVZuvQviOyGSnB/JW2iwLj0q\nFwWsDwoegMvEYWUCEwUZpP6gLQ5sEAO1k9TyS6o58B39J9PpYIg8Mzg2irNhT357\nzEVtUMuR5G7LL4ZtV3cny1dnXrPjOaqn0mWUn4gP5QKBgGbxoyJscyD+a7Ozs7qW\nBvvYVxU+dVD2ZC8qSYZDL6GH+mNtkkBrwf7gN5pe5kkKf+e2uB9NeQSPGJ3JmD5a\nlWC3gndwopSOrf3oxXtz5+RADdbREAbyyofaylNWQQtuNhzM4R2/g0GhUlHXdi2I\n7q5a/dJ7QVlaOe2Dzj0a+JGq\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-hbcij@smarttruck-8a93a.iam.gserviceaccount.com",
+  "client_id": "113916289873830866571",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-hbcij%40smarttruck-8a93a.iam.gserviceaccount.com"
+}

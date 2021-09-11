@@ -120,6 +120,8 @@ class PreviewCommand (InFaceCommand):
         logger.info(u'Previewing Device')
         print('Previewing Device')
         os.system('cd /home/satyol/video_surveillance; python3 webstreaming.py --ip 192.168.0.61 --port 8000')
+        #os.system('cd ~/SmartTruck/client-raspberry/video_surveillance; python3 webstreaming.py --ip 192.168.0.61 --port 8000')
+
 
 class RebootCommand (InFaceCommand):
     def execute(self, args=''):
